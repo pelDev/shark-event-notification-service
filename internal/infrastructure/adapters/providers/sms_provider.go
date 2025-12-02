@@ -7,11 +7,10 @@ import (
 )
 
 type SMSProvider struct {
-	senderID string
 }
 
-func NewSMSProvider(senderID string) *SMSProvider {
-	return &SMSProvider{senderID: senderID}
+func NewSMSProvider() *SMSProvider {
+	return &SMSProvider{}
 }
 
 func (p *SMSProvider) Name() string {

@@ -7,3 +7,7 @@ type NotificationProvider interface {
 	Supports(notificationType domain.NotificationType) bool
 	Name() string
 }
+
+type TemplateRenderer interface {
+	Render(templateName, subject string, data any) (string, error)
+}

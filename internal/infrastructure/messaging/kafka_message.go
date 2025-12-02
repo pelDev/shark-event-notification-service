@@ -1,39 +1,50 @@
 package messaging
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/commitshark/notification-svc/internal/domain/events"
+)
 
 // Infrastructure DTO for Kafka messages
-type KafkaNotificationMessage struct {
-	ID        string `json:"id"`
-	Type      string `json:"type"`
-	Recipient struct {
-		ID       string  `json:"id"`
-		Email    *string `json:"email"`
-		Phone    *string `json:"phone"`
-		DeviceID *string `json:"device_id"`
-	} `json:"recipient"`
-	Content struct {
-		Title string                  `json:"title"`
-		Body  *string                 `json:"body"`
-		Data  *map[string]interface{} `json:"data"`
-	} `json:"content"`
+
+// KafkaNotificationMessage aligns with your NotifyPayload + DomainEvent
+type KafkaNotificationMessagePayload struct {
+	Type    string `json:"type"` // e.g. "ticket.created"
+	Channel string `json:"channel"`
+	UserID  string `json:"user_id"` // the user being notified
+
+	Subject  string  `json:"subject"`
+	Message  *string `json:"message,omitempty"`  // plain text body
+	HTML     *string `json:"html,omitempty"`     // HTML email body
+	Template *string `json:"template,omitempty"` // optional template ID
+
+	Data *map[string]any `json:"data,omitempty"` // metadata payload
 }
 
-func (m *KafkaNotificationMessage) Validate() error {
-	if m.ID == "" {
-		return fmt.Errorf("id is required")
-	}
-	if m.Type == "" {
-		return fmt.Errorf("type is required")
-	}
-	if m.Recipient.ID == "" {
-		return fmt.Errorf("recipient.id is required")
-	}
-	if m.Content.Title == "" {
+func (m *KafkaNotificationMessagePayload) Validate() error {
+	if m.Subject == "" {
 		return fmt.Errorf("content.title is required")
 	}
-	if (m.Content.Body == nil || *m.Content.Body == "") && (m.Content.Data == nil) {
+	if (m.Message == nil || *m.Message == "") && (m.Data == nil) {
 		return fmt.Errorf("content.body and content.data cannot be empty")
 	}
+	return nil
+}
+
+func DecodeNotificationRequestPayload(e *events.KafkaEvent, p *KafkaNotificationMessagePayload) error {
+	if e.EventType != "notification.requested" {
+		return fmt.Errorf("wrong event type: %s", e.EventType)
+	}
+
+	if err := json.Unmarshal(e.Payload, p); err != nil {
+		return fmt.Errorf("invalid notification payload: %w", err)
+	}
+
+	if err := p.Validate(); err != nil {
+		return err
+	}
+
 	return nil
 }

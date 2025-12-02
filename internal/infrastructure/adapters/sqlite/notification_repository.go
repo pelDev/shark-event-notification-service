@@ -72,6 +72,8 @@ func createTables(db *sql.DB) error {
 		title TEXT NOT NULL,
 		body TEXT,
 		data TEXT, -- JSON data
+		html TEXT,
+		template TEXT,
 		status TEXT NOT NULL,
 		provider_response TEXT,
 		created_at DATETIME NOT NULL,
@@ -120,8 +122,8 @@ func (r *SQLiteNotificationRepository) Save(ctx context.Context, notification *d
 	INSERT INTO notifications (
 		id, type, recipient_id, recipient_email, recipient_phone,
 		recipient_device, title, body, data, status, provider_response,
-		created_at, sent_at, retry_count, max_retries, version
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		created_at, sent_at, retry_count, max_retries, html, template, version
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	ON CONFLICT(id) DO UPDATE SET
 		status = excluded.status,
 		provider_response = excluded.provider_response,
@@ -153,6 +155,8 @@ func (r *SQLiteNotificationRepository) Save(ctx context.Context, notification *d
 		notification.RetryCount,
 		notification.MaxRetries,
 		notification.Version,
+		notification.Content.HTML,
+		notification.Content.Template,
 		notification.Version - 1, // For optimistic locking
 	}
 
@@ -176,7 +180,7 @@ func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) 
 	query := `
 	SELECT 
 		id, type, recipient_id, recipient_email, recipient_phone,
-		recipient_device,
+		recipient_device, html, template,
 		title, body, data, status, provider_response,
 		created_at, sent_at, retry_count, max_retries, version
 	FROM notifications 
@@ -187,7 +191,7 @@ func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) 
 
 	var n domain.Notification
 	var recipientID string
-	var recipientEmail, recipientPhone, recipientDevice sql.NullString
+	var recipientEmail, recipientPhone, recipientDevice, html, template sql.NullString
 	var title, statusStr, typeStr string
 	var body, dataJSON sql.NullString
 	var providerResponse sql.NullString
@@ -197,6 +201,7 @@ func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) 
 
 	err := row.Scan(
 		&n.ID, &typeStr, &recipientID, &recipientEmail, &recipientPhone, &recipientDevice,
+		&html, &template,
 		&title, &body, &dataJSON, &statusStr, &providerResponse,
 		&createdAtStr, &sentAtStr, &n.RetryCount, &n.MaxRetries, &n.Version,
 	)
@@ -238,9 +243,11 @@ func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) 
 	}
 
 	content := domain.Content{
-		Title: title,
-		Body:  utils.SqlNullableString(body),
-		Data:  &data,
+		Title:    title,
+		Body:     utils.SqlNullableString(body),
+		Data:     &data,
+		HTML:     utils.SqlNullableString(html),
+		Template: utils.SqlNullableString(template),
 	}
 
 	n.Type = domain.NotificationType(typeStr)

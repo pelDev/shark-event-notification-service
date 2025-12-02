@@ -14,3 +14,7 @@ type NotificationRepository interface {
 	UpdateStatus(ctx context.Context, id string, status domain.NotificationStatus, providerResponse string) error
 	IncrementRetryCount(ctx context.Context, id string) error
 }
+
+type UserDataAdapter interface {
+	GetContactInfo(ctx context.Context, userID string) (*domain.UserContactInfo, error)
+}

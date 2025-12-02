@@ -1,0 +1,92 @@
+<!-- HERO -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:40px; background:linear-gradient(90deg, #C91CF4 0%, #B4545C 100%);">
+            <h1
+                style="margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#ffffff; font-size:26px; line-height:1.3;">
+                🎟️ Your Eventor Ticket Is Ready!
+            </h1>
+            <p
+                style="margin:10px 0 0 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#ffeefc; font-size:16px; line-height:1.4;">
+                You're all set — here’s your ticket for <strong>{{ event_title }}</strong>.
+            </p>
+        </td>
+    </tr>
+</table>
+
+<!-- BODY -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:28px 40px; background:#ffffff;">
+            <div
+                style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#1f2937; font-size:16px; line-height:1.6;">
+
+                <p style="margin:0 0 16px 0;">
+                    Below are your ticket details. Screenshot it, save it, or just show it directly from your inbox at
+                    the event. ✨
+                </p>
+
+                <!-- Ticket Box -->
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                    style="margin-top:20px; border:1px solid #e5e7eb; border-radius:12px;">
+                    <tr>
+                        <td style="padding:24px;">
+
+                            <!-- Event Title -->
+                            <h2
+                                style="margin:0 0 12px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; font-size:20px; color:#111827;">
+                                {{ event_title }}
+                            </h2>
+
+                            <!-- Ticket Details -->
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                                style="margin-top:12px;">
+                                <tr>
+                                    <td style="padding:6px 0; font-weight:600; color:#6b7280;">Ticket ID</td>
+                                    <td style="padding:6px 0; text-align:right; color:#111827;">{{ ticket_id }}</td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:6px 0; font-weight:600; color:#6b7280;">Ticket Type</td>
+                                    <td style="padding:6px 0; text-align:right; color:#111827;">{{ ticket_type }}</td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:6px 0; font-weight:600; color:#6b7280;">Date</td>
+                                    <td style="padding:6px 0; text-align:right; color:#111827;">{{ date }}</td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:6px 0; font-weight:600; color:#6b7280;">Amount Paid</td>
+                                    <td style="padding:6px 0; text-align:right; color:#111827;">₦{{ amount }}</td>
+                                </tr>
+                            </table>
+
+                            <!-- QR Code -->
+                            <div style="margin-top:24px; text-align:center;">
+                                <img src="{{ qr }}" alt="QR Code"
+                                    style="width:160px; max-width:160px; height:auto; border:1px solid #e5e7eb; border-radius:8px;">
+                                <p style="margin:12px 0 0 0; color:#6b7280; font-size:13px;">
+                                    Show this QR code at the event entrance.
+                                </p>
+                            </div>
+
+                        </td>
+                    </tr>
+                </table>
+
+                <p style="margin-top:24px;">
+                    Need to manage your ticket? You can always return to your Eventor dashboard.
+                </p>
+
+                <div style="margin-top:20px;">
+                    <a href="https://eventor.com/tickets/{{ ticket_id }}"
+                        style="display:inline-block; padding:12px 22px; border-radius:8px; background-color:#C91CF4; color:#fff; font-weight:600; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; text-decoration:none;">
+                        View Ticket Online
+                    </a>
+                </div>
+
+            </div>
+        </td>
+    </tr>
+</table>

@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/commitshark/notification-svc/internal/infrastructure/messaging"
+	"github.com/commitshark/notification-svc/internal/domain/events"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -24,9 +24,9 @@ type KafkaConsumer struct {
 }
 
 type KafkaConfig struct {
-	Brokers       []string
-	Topic         string
-	ConsumerGroup string
+	Brokers       []string `mapstructure:"brokers"`
+	Topic         string   `mapstructure:"topic"`
+	ConsumerGroup string   `mapstructure:"consumer_group"`
 }
 
 func NewKafkaConsumer(
@@ -103,20 +103,19 @@ func (c *KafkaConsumer) Start(ctx context.Context) error {
 }
 
 func (c *KafkaConsumer) processMessage(ctx context.Context, msg kafka.Message) error {
-	var request messaging.KafkaNotificationMessage
+	var request events.KafkaEvent
 
 	if err := json.Unmarshal(msg.Value, &request); err != nil {
 		return fmt.Errorf("failed to unmarshal message: %w", err)
 	}
 
-	c.logger.Printf("Processing notification request: %s", request.ID)
+	c.logger.Printf("Processing event: %s ---> Type %s", request.ID, request.EventType)
 
-	// Validate required fields
+	// Validate
 	if err := request.Validate(); err != nil {
 		return fmt.Errorf("failed to validate request: %w", err)
 	}
 
-	// Process through application service
 	return c.handler.HandleMessage(ctx, msg.Value)
 }
 

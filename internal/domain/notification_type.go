@@ -6,6 +6,7 @@ const (
 	EmailNotification NotificationType = "EMAIL"
 	SMSNotification   NotificationType = "SMS"
 	PushNotification  NotificationType = "PUSH"
+	InAppNotification NotificationType = "IN_APP"
 )
 
 type NotificationStatus string

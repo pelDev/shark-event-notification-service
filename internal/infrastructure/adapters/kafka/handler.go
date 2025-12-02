@@ -8,50 +8,67 @@ import (
 
 	"github.com/commitshark/notification-svc/internal/application/services"
 	"github.com/commitshark/notification-svc/internal/domain"
+	"github.com/commitshark/notification-svc/internal/domain/events"
+	"github.com/commitshark/notification-svc/internal/domain/ports"
 	"github.com/commitshark/notification-svc/internal/infrastructure/messaging"
 )
 
 // KafkaMessageHandler adapts Kafka messages to application service
 type KafkaMessageHandler struct {
-	service *services.NotificationService
-	logger  *log.Logger
+	service        *services.NotificationService
+	userDataSource ports.UserDataAdapter
+	logger         *log.Logger
 }
 
-func NewKafkaMessageHandler(service *services.NotificationService) *KafkaMessageHandler {
+func NewKafkaMessageHandler(service *services.NotificationService, userAdapter ports.UserDataAdapter) *KafkaMessageHandler {
 	return &KafkaMessageHandler{
-		service: service,
-		logger:  log.New(log.Writer(), "[KafkaHandler] ", log.LstdFlags),
+		service:        service,
+		userDataSource: userAdapter,
+		logger:         log.New(log.Writer(), "[KafkaHandler] ", log.LstdFlags),
 	}
 }
 
 // HandleMessage processes incoming Kafka messages
 func (h *KafkaMessageHandler) HandleMessage(ctx context.Context, message []byte) error {
-	var kafkaMsg messaging.KafkaNotificationMessage
+	var ev events.KafkaEvent
 
-	if err := json.Unmarshal(message, &kafkaMsg); err != nil {
+	if err := json.Unmarshal(message, &ev); err != nil {
 		return fmt.Errorf("failed to unmarshal Kafka message: %w", err)
 	}
 
+	if ev.EventType != "notification.requested" {
+		h.logger.Println("Invalid event:", ev)
+		return nil
+	}
+
 	// Validate message
-	if err := kafkaMsg.Validate(); err != nil {
+	var payload messaging.KafkaNotificationMessagePayload
+	if err := messaging.DecodeNotificationRequestPayload(&ev, &payload); err != nil {
 		return fmt.Errorf("invalid message: %w", err)
+	}
+
+	var user, err = h.userDataSource.GetContactInfo(ctx, payload.UserID)
+	if err != nil {
+		return fmt.Errorf("failed to get contact info message: %w", err)
 	}
 
 	// Convert to domain objects
 	recipient, err := domain.NewRecipient(
-		kafkaMsg.Recipient.ID,
-		kafkaMsg.Recipient.Email,
-		kafkaMsg.Recipient.Phone,
-		kafkaMsg.Recipient.DeviceID,
+		payload.UserID,
+		&user.Email,
+		user.Phone,
+		user.DeviceID,
 	)
 	if err != nil {
 		return fmt.Errorf("invalid recipient: %w", err)
 	}
 
 	content, err := domain.NewContent(
-		kafkaMsg.Content.Title,
-		kafkaMsg.Content.Body,
-		kafkaMsg.Content.Data,
+		payload.Subject,
+		payload.Message,
+		payload.Data,
+		payload.HTML,
+		payload.Template,
 	)
 	if err != nil {
 		return fmt.Errorf("invalid content: %w", err)
@@ -60,8 +77,8 @@ func (h *KafkaMessageHandler) HandleMessage(ctx context.Context, message []byte)
 	// Process through application service
 	return h.service.ProcessNotification(
 		ctx,
-		kafkaMsg.ID,
-		domain.NotificationType(kafkaMsg.Type),
+		ev.ID,
+		domain.NotificationType(payload.Channel),
 		*recipient,
 		*content,
 		3,

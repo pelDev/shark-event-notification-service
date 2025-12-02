@@ -11,17 +11,17 @@ import (
 )
 
 type NotificationService struct {
-	repo     ports.NotificationRepository
-	provider ports.NotificationProvider
+	repo      ports.NotificationRepository
+	providers []ports.NotificationProvider
 }
 
 func NewNotificationService(
 	repo ports.NotificationRepository,
-	provider ports.NotificationProvider,
+	providers []ports.NotificationProvider,
 ) *NotificationService {
 	return &NotificationService{
-		repo:     repo,
-		provider: provider,
+		repo:      repo,
+		providers: providers,
 	}
 }
 
@@ -73,14 +73,21 @@ func (s *NotificationService) SendNotification(ctx context.Context, notification
 		return fmt.Errorf("notification %s cannot be sent", notification.ID)
 	}
 
-	// Check if provider supports this notification type
-	if !s.provider.Supports(notification.Type) {
-		return fmt.Errorf("provider %s does not support %s notifications",
-			s.provider.Name(), notification.Type)
+	// Find a provider that supports this notification type
+	var provider ports.NotificationProvider
+	for _, p := range s.providers {
+		if p.Supports(notification.Type) {
+			provider = p
+			break
+		}
+	}
+
+	if provider == nil {
+		return fmt.Errorf("no provider supports notification type %s", notification.Type)
 	}
 
 	// Attempt to send
-	providerResponse, err := s.provider.Send(notification)
+	providerResponse, err := provider.Send(notification)
 	if err != nil {
 		notification.MarkAsFailed(err.Error())
 		if saveErr := s.repo.Save(ctx, notification); saveErr != nil {

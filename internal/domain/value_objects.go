@@ -4,6 +4,12 @@ import (
 	"errors"
 )
 
+type UserContactInfo struct {
+	Email    string
+	Phone    *string
+	DeviceID *string
+}
+
 type Recipient struct {
 	ID       string
 	Email    *string
@@ -24,12 +30,14 @@ func NewRecipient(id string, email, phone, deviceId *string) (*Recipient, error)
 }
 
 type Content struct {
-	Title string
-	Body  *string
-	Data  *map[string]interface{}
+	Title    string
+	Body     *string
+	Data     *map[string]interface{}
+	HTML     *string
+	Template *string
 }
 
-func NewContent(title string, body *string, data *map[string]interface{}) (*Content, error) {
+func NewContent(title string, body *string, data *map[string]interface{}, html, template *string) (*Content, error) {
 	if title == "" {
 		return nil, errors.New("title and body cannot be empty")
 	}
@@ -39,8 +47,10 @@ func NewContent(title string, body *string, data *map[string]interface{}) (*Cont
 	}
 
 	return &Content{
-		Title: title,
-		Body:  body,
-		Data:  data,
+		Title:    title,
+		Body:     body,
+		Data:     data,
+		HTML:     html,
+		Template: template,
 	}, nil
 }

@@ -9,7 +9,7 @@ import (
 type PushProvider struct {
 }
 
-func NewPushProvider(senderID string) *PushProvider {
+func NewPushProvider() *PushProvider {
 	return &PushProvider{}
 }
 
