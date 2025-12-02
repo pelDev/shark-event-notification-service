@@ -7,6 +7,3 @@ type NotificationProvider interface {
 	Supports(notificationType domain.NotificationType) bool
 	Name() string
 }
-type NotificationDispatcher interface {
-	Dispatch(notification *domain.Notification) error
-}

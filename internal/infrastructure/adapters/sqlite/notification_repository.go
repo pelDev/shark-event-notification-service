@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/commitshark/notification-svc/internal/domain"
+	"github.com/commitshark/notification-svc/internal/utils"
 	_ "modernc.org/sqlite"
 )
 
@@ -24,6 +25,14 @@ func NewSQLiteNotificationRepository(dbPath string) (*SQLiteNotificationReposito
 		return nil, fmt.Errorf("failed to open SQLite database: %w", err)
 	}
 
+	if err := optimizeSQLite(db); err != nil {
+		return nil, fmt.Errorf("failed to optimize db: %w", err)
+	}
+
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(5)
+	db.SetConnMaxLifetime(5 * time.Minute)
+
 	// Enable foreign keys
 	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
 		return nil, fmt.Errorf("failed to enable foreign keys: %w", err)
@@ -37,6 +46,19 @@ func NewSQLiteNotificationRepository(dbPath string) (*SQLiteNotificationReposito
 	return &SQLiteNotificationRepository{db: db}, nil
 }
 
+// Add these to SQLite setup
+func optimizeSQLite(db *sql.DB) error {
+	_, err := db.Exec(`
+        PRAGMA journal_mode = WAL;
+        PRAGMA synchronous = NORMAL;
+        PRAGMA cache_size = -10000;  -- 10MB cache
+        PRAGMA mmap_size = 30000000000;
+        PRAGMA busy_timeout = 5000;
+        PRAGMA auto_vacuum = INCREMENTAL;
+    `)
+	return err
+}
+
 func createTables(db *sql.DB) error {
 	// Notifications table
 	notificationTable := `
@@ -46,8 +68,9 @@ func createTables(db *sql.DB) error {
 		recipient_id TEXT NOT NULL,
 		recipient_email TEXT,
 		recipient_phone TEXT,
+		recipient_device TEXT,
 		title TEXT NOT NULL,
-		body TEXT NOT NULL,
+		body TEXT,
 		data TEXT, -- JSON data
 		status TEXT NOT NULL,
 		provider_response TEXT,
@@ -96,9 +119,9 @@ func (r *SQLiteNotificationRepository) Save(ctx context.Context, notification *d
 	query := `
 	INSERT INTO notifications (
 		id, type, recipient_id, recipient_email, recipient_phone,
-		title, body, data, status, provider_response,
+		recipient_device, title, body, data, status, provider_response,
 		created_at, sent_at, retry_count, max_retries, version
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	ON CONFLICT(id) DO UPDATE SET
 		status = excluded.status,
 		provider_response = excluded.provider_response,
@@ -119,6 +142,7 @@ func (r *SQLiteNotificationRepository) Save(ctx context.Context, notification *d
 		notification.Recipient.ID,
 		notification.Recipient.Email,
 		notification.Recipient.Phone,
+		notification.Recipient.DeviceID,
 		notification.Content.Title,
 		notification.Content.Body,
 		string(dataJSON),
@@ -152,6 +176,7 @@ func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) 
 	query := `
 	SELECT 
 		id, type, recipient_id, recipient_email, recipient_phone,
+		recipient_device,
 		title, body, data, status, provider_response,
 		created_at, sent_at, retry_count, max_retries, version
 	FROM notifications 
@@ -161,15 +186,17 @@ func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) 
 	row := r.db.QueryRowContext(ctx, query, id)
 
 	var n domain.Notification
-	var recipientID, recipientEmail, recipientPhone string
-	var title, body, statusStr, typeStr, dataJSON string
+	var recipientID string
+	var recipientEmail, recipientPhone, recipientDevice sql.NullString
+	var title, statusStr, typeStr string
+	var body, dataJSON sql.NullString
 	var providerResponse sql.NullString
 	var createdAtStr string
 	var sentAtStr sql.NullString
 	var data map[string]interface{}
 
 	err := row.Scan(
-		&n.ID, &typeStr, &recipientID, &recipientEmail, &recipientPhone,
+		&n.ID, &typeStr, &recipientID, &recipientEmail, &recipientPhone, &recipientDevice,
 		&title, &body, &dataJSON, &statusStr, &providerResponse,
 		&createdAtStr, &sentAtStr, &n.RetryCount, &n.MaxRetries, &n.Version,
 	)
@@ -181,8 +208,8 @@ func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) 
 	}
 
 	// Parse JSON data
-	if dataJSON != "" {
-		if err := json.Unmarshal([]byte(dataJSON), &data); err != nil {
+	if dataJSON.Valid && dataJSON.String != "" {
+		if err := json.Unmarshal([]byte(dataJSON.String), &data); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal data: %w", err)
 		}
 	}
@@ -204,15 +231,16 @@ func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) 
 
 	// Build domain objects
 	recipient := domain.Recipient{
-		ID:    recipientID,
-		Email: recipientEmail,
-		Phone: recipientPhone,
+		ID:       recipientID,
+		Email:    utils.SqlNullableString(recipientEmail),
+		Phone:    utils.SqlNullableString(recipientPhone),
+		DeviceID: utils.SqlNullableString(recipientDevice),
 	}
 
 	content := domain.Content{
 		Title: title,
-		Body:  body,
-		Data:  data,
+		Body:  utils.SqlNullableString(body),
+		Data:  &data,
 	}
 
 	n.Type = domain.NotificationType(typeStr)
