@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -38,10 +39,10 @@ type Config struct {
 }
 
 func LoadConfig() Config {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".") // look in current directory
-	viper.AutomaticEnv()     // override with env variables if present
+	viper.SetConfigType("yaml")
+	viper.SetConfigName("config")
+	viper.AutomaticEnv() // override with env variables if present
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("Error reading config file: %v", err)
@@ -51,6 +52,8 @@ func LoadConfig() Config {
 	if err := viper.Unmarshal(&cfg); err != nil {
 		log.Fatalf("Unable to decode into struct: %v", err)
 	}
+
+	fmt.Println("Configuration initialized. Using config file:", viper.ConfigFileUsed())
 
 	return cfg
 }
