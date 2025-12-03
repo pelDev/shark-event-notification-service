@@ -81,7 +81,7 @@ func createTables(db *sql.DB) error {
 		retry_count INTEGER DEFAULT 0,
 		max_retries INTEGER DEFAULT 3,
 		version INTEGER DEFAULT 1,
-		CHECK (type IN ('EMAIL', 'SMS', 'PUSH')),
+		CHECK (type IN ('EMAIL', 'SMS', 'PUSH', 'IN_APP')),
 		CHECK (status IN ('PENDING', 'SENT', 'FAILED', 'DELIVERED'))
 	);
 	`
@@ -113,10 +113,6 @@ func createTables(db *sql.DB) error {
 }
 
 func (r *SQLiteNotificationRepository) Save(ctx context.Context, notification *domain.Notification) error {
-	dataJSON, err := json.Marshal(notification.Content.Data)
-	if err != nil {
-		return fmt.Errorf("failed to marshal data: %w", err)
-	}
 
 	query := `
 	INSERT INTO notifications (
@@ -138,6 +134,15 @@ func (r *SQLiteNotificationRepository) Save(ctx context.Context, notification *d
 		sentAt = notification.SentAt.Format(time.RFC3339)
 	}
 
+	var dataJSON string
+	if notification.Content.Data != nil {
+		b, err := json.Marshal(notification.Content.Data)
+		if err != nil {
+			return err
+		}
+		dataJSON = string(b)
+	}
+
 	args := []interface{}{
 		notification.ID,
 		string(notification.Type),
@@ -154,9 +159,9 @@ func (r *SQLiteNotificationRepository) Save(ctx context.Context, notification *d
 		sentAt,
 		notification.RetryCount,
 		notification.MaxRetries,
-		notification.Version,
 		notification.Content.HTML,
 		notification.Content.Template,
+		notification.Version,
 		notification.Version - 1, // For optimistic locking
 	}
 
@@ -179,10 +184,24 @@ func (r *SQLiteNotificationRepository) Save(ctx context.Context, notification *d
 func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) (*domain.Notification, error) {
 	query := `
 	SELECT 
-		id, type, recipient_id, recipient_email, recipient_phone,
-		recipient_device, html, template,
-		title, body, data, status, provider_response,
-		created_at, sent_at, retry_count, max_retries, version
+		id,
+		type,
+		recipient_id,
+		recipient_email,
+		recipient_phone,
+		recipient_device,
+		title,
+		body,
+		data,
+		html,
+		template,
+		status,
+		provider_response,
+		created_at,
+		sent_at,
+		retry_count,
+		max_retries,
+		version
 	FROM notifications 
 	WHERE id = ?
 	`
@@ -201,8 +220,7 @@ func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) 
 
 	err := row.Scan(
 		&n.ID, &typeStr, &recipientID, &recipientEmail, &recipientPhone, &recipientDevice,
-		&html, &template,
-		&title, &body, &dataJSON, &statusStr, &providerResponse,
+		&title, &body, &dataJSON, &html, &template, &statusStr, &providerResponse,
 		&createdAtStr, &sentAtStr, &n.RetryCount, &n.MaxRetries, &n.Version,
 	)
 	if err == sql.ErrNoRows {

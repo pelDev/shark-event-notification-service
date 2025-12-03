@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	config "github.com/commitshark/notification-svc/internal"
 	"github.com/commitshark/notification-svc/internal/application/services"
 	"github.com/commitshark/notification-svc/internal/domain/ports"
 	grpcclient "github.com/commitshark/notification-svc/internal/infrastructure/adapters/grpc"
@@ -17,42 +18,16 @@ import (
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/sqlite"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/templates"
 
-	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
-
-type Config struct {
-	SQLite struct {
-		Path string `mapstructure:"path"`
-	} `mapstructure:"sqlite"`
-
-	Kafka struct {
-		Brokers       []string `mapstructure:"brokers"`
-		Topic         string   `mapstructure:"topic"`
-		ConsumerGroup string   `mapstructure:"consumer_group"`
-	} `mapstructure:"kafka"`
-
-	Email struct {
-		SMTPHost string `mapstructure:"smtp_host"`
-		SMTPPort int    `mapstructure:"smtp_port"`
-		Username string `mapstructure:"username"`
-		Password string `mapstructure:"password"`
-		From     string `mapstructure:"from"`
-	} `mapstructure:"email"`
-
-	Service struct {
-		RetryBatchSize int           `mapstructure:"retry_batch_size"`
-		RetryInterval  time.Duration `mapstructure:"retry_interval"`
-	} `mapstructure:"service"`
-}
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	// Load configuration
-	config := loadConfig()
+	config := config.LoadConfig()
 
 	// Initialize SMTP Client
 	auth := smtp.PlainAuth("", config.Email.Username, config.Email.Password, config.Email.SMTPHost)
@@ -117,24 +92,6 @@ func main() {
 	waitForShutdown(cancel)
 
 	log.Println("Notification service shutdown complete")
-}
-
-func loadConfig() Config {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".") // look in current directory
-	viper.AutomaticEnv()     // override with env variables if present
-
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("Error reading config file: %v", err)
-	}
-
-	var cfg Config
-	if err := viper.Unmarshal(&cfg); err != nil {
-		log.Fatalf("Unable to decode into struct: %v", err)
-	}
-
-	return cfg
 }
 
 func startRetryWorker(ctx context.Context, service *services.NotificationService, config struct {

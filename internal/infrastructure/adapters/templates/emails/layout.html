@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>{{ subject }}</title>
+    <title>{{ .Subject }}</title>
 
     <style>
         @media only screen and (max-width: 600px) {
@@ -56,7 +56,7 @@
     <!-- Preheader (hidden) -->
     <span
         style="display:none; font-size:1px; color:#ffffff; line-height:1px; max-height:0px; max-width:0px; opacity:0; overflow:hidden;">
-        {{ preheader }}
+        {{ .Preheader }}
     </span>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
@@ -87,7 +87,7 @@
                     <!-- Dynamic Body -->
                     <tr>
                         <td>
-                            {{ body }}
+                            {{ .Body }}
                         </td>
                     </tr>
 
@@ -106,7 +106,7 @@
                                 <p style="margin:0 0 8px 0;">You're receiving this because you signed up for Eventor
                                     updates.</p>
                                 <p style="margin:6px 0 0 0;">
-                                    <a href="{{ unsubscribeUrl }}"
+                                    <a href="{{ .UnsubscribeURL }}"
                                         style="color:#6b7280; text-decoration:underline;">Unsubscribe</a>
                                 </p>
                             </div>

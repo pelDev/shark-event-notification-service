@@ -44,7 +44,7 @@ func (s *NotificationService) ProcessNotification(
 		maxRetries,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to create notification: %w", err)
+		return fmt.Errorf("failed to create notification: %w, notificationType: %s", err, notificationType)
 	}
 
 	// Save to repository

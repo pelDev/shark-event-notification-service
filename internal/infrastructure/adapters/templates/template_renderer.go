@@ -14,16 +14,21 @@ type GoTemplateRenderer struct {
 }
 
 type EmailLayoutData struct {
-	Subject        string        // {{ subject }}
-	Preheader      string        // {{ preheader }}
-	UnsubscribeURL string        // {{ unsubscribeUrl }}
-	Body           template.HTML // {{ body }} (already-rendered HTML partial)
+	Subject        string
+	Preheader      string
+	UnsubscribeURL string
+	Body           template.HTML
 }
 
 func NewGoTemplateRenderer(fsys fs.FS) (ports.TemplateRenderer, error) {
-	tmpl, err := template.ParseFS(fsys, "*.html")
+	tmpl, err := template.ParseFS(fsys, "emails/*.html")
 	if err != nil {
 		return nil, err
+	}
+
+	// Log all parsed templates
+	for _, t := range tmpl.Templates() {
+		fmt.Println("Parsed template:", t.Name())
 	}
 
 	return &GoTemplateRenderer{
@@ -35,17 +40,19 @@ func (r *GoTemplateRenderer) Render(
 	templateName, subject string,
 	data any,
 ) (string, error) {
+	templateNameFull := fmt.Sprintf("%s.html", templateName)
+
 	d, ok := data.(EmailTemplateData)
 	if !ok {
 		return "", fmt.Errorf("invalid template data type")
 	}
 
-	if r.templates.Lookup(templateName) == nil {
-		return "", fmt.Errorf("template %s not found", templateName)
+	if r.templates.Lookup(templateNameFull) == nil {
+		return "", fmt.Errorf("template %s not found", templateNameFull)
 	}
 
 	var buf bytes.Buffer
-	err := r.templates.ExecuteTemplate(&buf, templateName, d)
+	err := r.templates.ExecuteTemplate(&buf, templateNameFull, d)
 	if err != nil {
 		return "", err
 	}
@@ -58,7 +65,7 @@ func (r *GoTemplateRenderer) Render(
 	}
 
 	var layoutBuf bytes.Buffer
-	err = r.templates.ExecuteTemplate(&layoutBuf, "layout", layoutData)
+	err = r.templates.ExecuteTemplate(&layoutBuf, "layout.html", layoutData)
 	if err != nil {
 		return "", err
 	}

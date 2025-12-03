@@ -10,13 +10,13 @@ type EmailTemplateData interface {
 }
 
 type TicketEmailData struct {
-	TicketID   string  `json:"ticket_id"`   // {{ ticket_id }}
-	QR         string  `json:"qr"`          // {{ qr }} (base64 image)
-	EventID    string  `json:"event_id"`    // {{ event_id }}
-	EventTitle string  `json:"event_title"` // {{ event_title }}
-	TicketType string  `json:"ticket_type"` // {{ ticket_type }}
-	Date       string  `json:"date"`        // {{ date }}
-	Amount     float64 `json:"amount"`      // {{ amount }}
+	TicketID   string `json:"ticket_id"`   // {{ ticket_id }}
+	QR         string `json:"qr"`          // {{ qr }} (base64 image)
+	EventID    string `json:"event_id"`    // {{ event_id }}
+	EventTitle string `json:"event_title"` // {{ event_title }}
+	TicketType string `json:"ticket_type"` // {{ ticket_type }}
+	Date       string `json:"date"`        // {{ date }}
+	Amount     string `json:"amount"`      // {{ amount }}
 }
 
 func (tD *TicketEmailData) isEmailTemplateData() {}
@@ -29,9 +29,11 @@ func ParseTemplateData(templateName string, data map[string]interface{}, out *Em
 
 	switch templateName {
 	case "ticket-ready":
-		if err := json.Unmarshal(raw, out); err != nil {
+		var result TicketEmailData
+		if err := json.Unmarshal(raw, &result); err != nil {
 			return fmt.Errorf("failed to unmarshal ticket email data: %w", err)
 		}
+		*out = &result
 		return nil
 
 	default:

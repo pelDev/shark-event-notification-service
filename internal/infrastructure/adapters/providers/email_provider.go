@@ -56,7 +56,7 @@ func (p *EmailProvider) Send(n *domain.Notification) (string, error) {
 			return "", err
 		}
 
-		fmt.Printf("[%s] Sending to %s: %s\n \nHTML: \n%s", p.Name(), email, subject, html)
+		fmt.Printf("[%s] Sending to %s: %s\n", p.Name(), email, subject)
 
 		message := []byte(fmt.Sprintf(
 			"From: %s\nTo: %s\nSubject: %s\nMIME-Version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n%s",
@@ -67,6 +67,8 @@ func (p *EmailProvider) Send(n *domain.Notification) (string, error) {
 		if err != nil {
 			return "", err
 		}
+
+		fmt.Printf("Email sent successfully to %s", email)
 
 		return fmt.Sprintf("Email sent successfully to %s", email), nil
 	}

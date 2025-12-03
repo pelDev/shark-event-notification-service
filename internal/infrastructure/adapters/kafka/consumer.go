@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	config "github.com/commitshark/notification-svc/internal"
 	"github.com/commitshark/notification-svc/internal/domain/events"
 	"github.com/segmentio/kafka-go"
 )
@@ -23,37 +24,31 @@ type KafkaConsumer struct {
 	logger        *log.Logger
 }
 
-type KafkaConfig struct {
-	Brokers       []string `mapstructure:"brokers"`
-	Topic         string   `mapstructure:"topic"`
-	ConsumerGroup string   `mapstructure:"consumer_group"`
-}
-
 func NewKafkaConsumer(
-	config KafkaConfig,
+	kConfig config.KafkaConfig,
 	handler *KafkaMessageHandler,
 ) *KafkaConsumer {
 	logger := log.New(os.Stdout, "[KafkaConsumer] ", log.LstdFlags)
 
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:        config.Brokers,
-		Topic:          config.Topic,
-		GroupID:        config.ConsumerGroup,
+		Brokers:        kConfig.Brokers,
+		Topic:          kConfig.Topic,
+		GroupID:        kConfig.ConsumerGroup,
 		MinBytes:       10e3, // 10KB
 		MaxBytes:       10e6, // 10MB
 		MaxWait:        time.Second,
 		CommitInterval: time.Second,
 		StartOffset:    kafka.LastOffset,
-		Logger:         kafka.LoggerFunc(logger.Printf),
-		ErrorLogger:    kafka.LoggerFunc(logger.Printf),
+		// Logger:         kafka.LoggerFunc(logger.Printf),
+		ErrorLogger: kafka.LoggerFunc(logger.Printf),
 	})
 
 	return &KafkaConsumer{
 		reader:        reader,
 		handler:       handler,
-		topic:         config.Topic,
-		consumerGroup: config.ConsumerGroup,
-		brokers:       config.Brokers,
+		topic:         kConfig.Topic,
+		consumerGroup: kConfig.ConsumerGroup,
+		brokers:       kConfig.Brokers,
 		logger:        logger,
 	}
 }

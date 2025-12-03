@@ -1,3 +1,4 @@
 proto/*
 config.yaml
 .todo
+data/*

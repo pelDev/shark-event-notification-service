@@ -8,7 +8,7 @@
             </h1>
             <p
                 style="margin:10px 0 0 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#ffeefc; font-size:16px; line-height:1.4;">
-                You're all set — here’s your ticket for <strong>{{ event_title }}</strong>.
+                You're all set — here’s your ticket for <strong>{{ .EventTitle }}</strong>.
             </p>
         </td>
     </tr>
@@ -35,7 +35,7 @@
                             <!-- Event Title -->
                             <h2
                                 style="margin:0 0 12px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; font-size:20px; color:#111827;">
-                                {{ event_title }}
+                                {{ .EventTitle }}
                             </h2>
 
                             <!-- Ticket Details -->
@@ -43,28 +43,28 @@
                                 style="margin-top:12px;">
                                 <tr>
                                     <td style="padding:6px 0; font-weight:600; color:#6b7280;">Ticket ID</td>
-                                    <td style="padding:6px 0; text-align:right; color:#111827;">{{ ticket_id }}</td>
+                                    <td style="padding:6px 0; text-align:right; color:#111827;">{{ .TicketID }}</td>
                                 </tr>
 
                                 <tr>
                                     <td style="padding:6px 0; font-weight:600; color:#6b7280;">Ticket Type</td>
-                                    <td style="padding:6px 0; text-align:right; color:#111827;">{{ ticket_type }}</td>
+                                    <td style="padding:6px 0; text-align:right; color:#111827;">{{ .TicketType }}</td>
                                 </tr>
 
                                 <tr>
                                     <td style="padding:6px 0; font-weight:600; color:#6b7280;">Date</td>
-                                    <td style="padding:6px 0; text-align:right; color:#111827;">{{ date }}</td>
+                                    <td style="padding:6px 0; text-align:right; color:#111827;">{{ .Date }}</td>
                                 </tr>
 
                                 <tr>
                                     <td style="padding:6px 0; font-weight:600; color:#6b7280;">Amount Paid</td>
-                                    <td style="padding:6px 0; text-align:right; color:#111827;">₦{{ amount }}</td>
+                                    <td style="padding:6px 0; text-align:right; color:#111827;">{{ .Amount }}</td>
                                 </tr>
                             </table>
 
                             <!-- QR Code -->
                             <div style="margin-top:24px; text-align:center;">
-                                <img src="{{ qr }}" alt="QR Code"
+                                <img src="{{ .QR }}" alt="QR Code"
                                     style="width:160px; max-width:160px; height:auto; border:1px solid #e5e7eb; border-radius:8px;">
                                 <p style="margin:12px 0 0 0; color:#6b7280; font-size:13px;">
                                     Show this QR code at the event entrance.
@@ -80,7 +80,7 @@
                 </p>
 
                 <div style="margin-top:20px;">
-                    <a href="https://eventor.com/tickets/{{ ticket_id }}"
+                    <a href="https://eventor.com/tickets/{{ .TicketID }}"
                         style="display:inline-block; padding:12px 22px; border-radius:8px; background-color:#C91CF4; color:#fff; font-weight:600; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; text-decoration:none;">
                         View Ticket Online
                     </a>

@@ -94,7 +94,7 @@ func NewNotification(
 
 func isValidNotificationType(t NotificationType) bool {
 	switch t {
-	case EmailNotification, SMSNotification, PushNotification:
+	case EmailNotification, SMSNotification, PushNotification, InAppNotification:
 		return true
 	default:
 		return false
