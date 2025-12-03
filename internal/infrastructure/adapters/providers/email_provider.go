@@ -58,12 +58,13 @@ func (p *EmailProvider) Send(n *domain.Notification) (string, error) {
 
 		fmt.Printf("[%s] Sending to %s: %s\n", p.Name(), email, subject)
 
-		message := []byte(fmt.Sprintf(
-			"From: %s\nTo: %s\nSubject: %s\nMIME-Version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n%s",
-			p.emailFrom, email, subject, html,
-		))
-
-		err = smtp.SendMail(p.smtpHost+":"+strconv.Itoa(p.smtpPort), p.smtpAuth, p.emailFrom, []string{email}, message)
+		err = smtp.SendMail(
+			p.smtpHost+":"+strconv.Itoa(p.smtpPort),
+			p.smtpAuth,
+			p.emailFrom,
+			[]string{email},
+			emailData.GetMessage(p.emailFrom, email, subject, html),
+		)
 		if err != nil {
 			return "", err
 		}

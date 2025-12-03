@@ -15,6 +15,8 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+const COMMIT_BATCH_SIZE = 2
+
 type KafkaConsumer struct {
 	reader        *kafka.Reader
 	handler       *KafkaMessageHandler
@@ -31,16 +33,14 @@ func NewKafkaConsumer(
 	logger := log.New(os.Stdout, "[KafkaConsumer] ", log.LstdFlags)
 
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:        kConfig.Brokers,
-		Topic:          kConfig.Topic,
-		GroupID:        kConfig.ConsumerGroup,
-		MinBytes:       10e3, // 10KB
-		MaxBytes:       10e6, // 10MB
-		MaxWait:        time.Second,
-		CommitInterval: time.Second,
-		StartOffset:    kafka.LastOffset,
-		// Logger:         kafka.LoggerFunc(logger.Printf),
-		ErrorLogger: kafka.LoggerFunc(logger.Printf),
+		Brokers:  kConfig.Brokers,
+		Topic:    kConfig.Topic,
+		GroupID:  kConfig.ConsumerGroup,
+		MinBytes: 10e3, // 10KB
+		MaxBytes: 10e6, // 10MB
+		// Disable auto commit
+		CommitInterval: 0,
+		ErrorLogger:    kafka.LoggerFunc(logger.Printf),
 	})
 
 	return &KafkaConsumer{
@@ -66,6 +66,8 @@ func (c *KafkaConsumer) Start(ctx context.Context) error {
 		c.reader.Close()
 	}()
 
+	var toCommit []kafka.Message
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -89,9 +91,15 @@ func (c *KafkaConsumer) Start(ctx context.Context) error {
 				continue
 			}
 
-			// Commit offset
-			if err := c.reader.CommitMessages(ctx, msg); err != nil {
-				c.logger.Printf("Failed to commit message: %v", err)
+			// Batch Commit offset
+			toCommit = append(toCommit, msg)
+
+			if len(toCommit) >= COMMIT_BATCH_SIZE {
+				if err := c.reader.CommitMessages(ctx, msg); err != nil {
+					c.logger.Printf("Failed to commit message: %v", err)
+				}
+				c.logger.Printf("%v message(s) committed to kafka", len(toCommit))
+				toCommit = nil
 			}
 		}
 	}
