@@ -1,0 +1,35 @@
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:40px; background:linear-gradient(90deg,#C91CF4 0%,#B4545C 100%);">
+      <h1 style="margin:0; font-family:system-ui; color:#fff; font-size:24px;">🎉 New Ticket Sold!</h1>
+      <p style="margin:6px 0 0; font-family:system-ui; color:#fbe7ff; font-size:15px;">
+        A new ticket has just been purchased for your event.
+      </p>
+    </td>
+  </tr>
+</table>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff;">
+  <tr>
+    <td style="padding:28px 40px;">
+      <div style="font-family:system-ui; color:#111; font-size:16px; line-height:1.6;">
+        <h2 style="margin:0 0 14px 0; font-size:20px;">{{ .EventTitle }}</h2>
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          <tr><td style="padding:6px 0; color:#6b7280;">Ticket Type</td><td style="text-align:right;">{{ .TicketType }}</td></tr>
+          <tr><td style="padding:6px 0; color:#6b7280;">Buyer</td><td style="text-align:right;">{{ .BuyerName }} ({{ .BuyerEmail }})</td></tr>
+          <tr><td style="padding:6px 0; color:#6b7280;">Amount</td><td style="text-align:right;">{{ .Amount }}</td></tr>
+          <tr><td style="padding:6px 0; color:#6b7280;">Ticket ID</td><td style="text-align:right;">{{ .TicketID }}</td></tr>
+        </table>
+
+        <div style="margin-top:22px;">
+          <a href="https://eventor.com/dashboard/events"
+             style="display:inline-block;padding:12px 20px;background:#C91CF4;color:#fff;border-radius:8px;
+                    text-decoration:none;font-weight:600;">
+            View Dashboard
+          </a>
+        </div>
+      </div>
+    </td>
+  </tr>
+</table>

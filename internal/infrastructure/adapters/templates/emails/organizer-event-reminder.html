@@ -1,0 +1,36 @@
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:40px; background:linear-gradient(90deg,#C91CF4 0%,#B4545C 100%);">
+            <h1 style="margin:0; font-family:system-ui; color:#fff; font-size:24px;">
+                ⏰ Your Event Starts in {{ .TimeLeft }}
+            </h1>
+            <p style="margin:8px 0 0; font-family:system-ui; color:#fbe7ff; font-size:15px;">
+                A quick reminder so you're fully prepared.
+            </p>
+        </td>
+    </tr>
+</table>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:28px 40px; background:#fff;">
+            <div style="font-family:system-ui; color:#1a1a1a; font-size:16px; line-height:1.6;">
+
+                <h2 style="margin-top:0; font-size:20px;">{{ .EventTitle }}</h2>
+
+                <p>Your event is scheduled for:</p>
+                <p style="font-weight:600; margin:4px 0 20px 0;">{{ .EventDate }}</p>
+
+                <p>Make sure everything is ready—venue, speakers, logistics, and check-in devices.</p>
+
+                <div style="margin-top:22px;">
+                    <a href="https://eventor.com/dashboard/events/{{ .EventID }}"
+                        style="display:inline-block;padding:12px 20px;background:#C91CF4;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">
+                        Open Event Dashboard
+                    </a>
+                </div>
+
+            </div>
+        </td>
+    </tr>
+</table>
