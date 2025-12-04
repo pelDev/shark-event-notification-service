@@ -1,16 +1,11 @@
-package messaging
+package events
 
 import (
 	"encoding/json"
 	"fmt"
-
-	"github.com/commitshark/notification-svc/internal/domain/events"
 )
 
-// Infrastructure DTO for Kafka messages
-
-// KafkaNotificationMessage aligns with your NotifyPayload + DomainEvent
-type KafkaNotificationMessagePayload struct {
+type NotificationMessagePayload struct {
 	Type    string `json:"type"` // e.g. "ticket.created"
 	Channel string `json:"channel"`
 	UserID  string `json:"user_id"` // the user being notified
@@ -23,7 +18,7 @@ type KafkaNotificationMessagePayload struct {
 	Data *map[string]any `json:"data,omitempty"` // metadata payload
 }
 
-func (m *KafkaNotificationMessagePayload) Validate() error {
+func (m *NotificationMessagePayload) Validate() error {
 	if m.Subject == "" {
 		return fmt.Errorf("content.title is required")
 	}
@@ -33,7 +28,7 @@ func (m *KafkaNotificationMessagePayload) Validate() error {
 	return nil
 }
 
-func DecodeNotificationRequestPayload(e *events.KafkaEvent, p *KafkaNotificationMessagePayload) error {
+func DecodeNotificationRequestPayload(e *DomainEvent, p *NotificationMessagePayload) error {
 	if e.EventType != "notification.requested" {
 		return fmt.Errorf("wrong event type: %s", e.EventType)
 	}

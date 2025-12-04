@@ -106,7 +106,7 @@ func (c *KafkaConsumer) Start(ctx context.Context) error {
 }
 
 func (c *KafkaConsumer) processMessage(ctx context.Context, msg kafka.Message) error {
-	var request events.KafkaEvent
+	var request events.DomainEvent
 
 	if err := json.Unmarshal(msg.Value, &request); err != nil {
 		return fmt.Errorf("failed to unmarshal message: %w", err)
@@ -119,7 +119,7 @@ func (c *KafkaConsumer) processMessage(ctx context.Context, msg kafka.Message) e
 		return fmt.Errorf("failed to validate request: %w", err)
 	}
 
-	return c.handler.HandleMessage(ctx, msg.Value)
+	return c.handler.HandleMessage(ctx, request)
 }
 
 func (c *KafkaConsumer) Close() error {
