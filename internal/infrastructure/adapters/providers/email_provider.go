@@ -7,7 +7,7 @@ import (
 
 	"github.com/commitshark/notification-svc/internal/domain"
 	"github.com/commitshark/notification-svc/internal/domain/ports"
-	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/templates"
+	domain_template "github.com/commitshark/notification-svc/internal/domain/templates"
 )
 
 type EmailProvider struct {
@@ -45,8 +45,8 @@ func (p *EmailProvider) Send(n *domain.Notification) (string, error) {
 	subject := n.Content.Title
 
 	if n.Content.Template != nil && *n.Content.Template != "" && n.Content.Data != nil {
-		var emailData templates.EmailTemplateData
-		err := templates.ParseTemplateData(*n.Content.Template, *n.Content.Data, &emailData)
+		var emailData domain_template.EmailTemplateData
+		err := domain_template.ParseTemplateData(*n.Content.Template, *n.Content.Data, &emailData)
 		if err != nil {
 			return "", err
 		}

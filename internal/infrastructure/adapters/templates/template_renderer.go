@@ -7,6 +7,7 @@ import (
 	"io/fs"
 
 	"github.com/commitshark/notification-svc/internal/domain/ports"
+	domain_template "github.com/commitshark/notification-svc/internal/domain/templates"
 )
 
 type GoTemplateRenderer struct {
@@ -42,7 +43,7 @@ func (r *GoTemplateRenderer) Render(
 ) (string, error) {
 	templateNameFull := fmt.Sprintf("%s.html", templateName)
 
-	d, ok := data.(EmailTemplateData)
+	d, ok := data.(domain_template.EmailTemplateData)
 	if !ok {
 		return "", fmt.Errorf("invalid template data type")
 	}

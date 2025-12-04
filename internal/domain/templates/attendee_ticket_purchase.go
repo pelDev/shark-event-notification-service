@@ -1,18 +1,12 @@
 package templates
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 )
 
-type EmailTemplateData interface {
-	isEmailTemplateData()
-	GetMessage(emailFrom, email, subject, html string) []byte
-}
-
-type TicketEmailData struct {
+type AttendeeTicketPurchaseEmailData struct {
 	TicketID   string `json:"ticket_id"`   // {{ ticket_id }}
 	QR         string `json:"qr"`          // {{ qr }} (base64 image)
 	EventID    string `json:"event_id"`    // {{ event_id }}
@@ -22,9 +16,9 @@ type TicketEmailData struct {
 	Amount     string `json:"amount"`      // {{ amount }}
 }
 
-func (tD *TicketEmailData) isEmailTemplateData() {}
+func (tD *AttendeeTicketPurchaseEmailData) isEmailTemplateData() {}
 
-func (tD *TicketEmailData) GetMessage(emailFrom, email, subject, html string) []byte {
+func (tD *AttendeeTicketPurchaseEmailData) GetMessage(emailFrom, email, subject, html string) []byte {
 	boundary := fmt.Sprintf("mixed-%d", time.Now().UnixNano())
 	cid := "qr@local"
 
@@ -64,26 +58,4 @@ func (tD *TicketEmailData) GetMessage(emailFrom, email, subject, html string) []
 	)
 
 	return []byte(message)
-}
-
-func ParseTemplateData(templateName string, data map[string]interface{}, out *EmailTemplateData) error {
-	fmt.Printf("[ParseTemplateData] templateName: %s, data: %v", templateName, data)
-
-	raw, err := json.Marshal(data)
-	if err != nil {
-		return fmt.Errorf("failed to marshal map: %w", err)
-	}
-
-	switch templateName {
-	case "ticket-ready":
-		var result TicketEmailData
-		if err := json.Unmarshal(raw, &result); err != nil {
-			return fmt.Errorf("failed to unmarshal ticket email data: %w", err)
-		}
-		*out = &result
-		return nil
-
-	default:
-		return fmt.Errorf("unknown template name: %s", templateName)
-	}
 }
