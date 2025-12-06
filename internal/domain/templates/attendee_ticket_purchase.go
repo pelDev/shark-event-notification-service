@@ -59,3 +59,7 @@ func (tD *AttendeeTicketPurchaseEmailData) GetMessage(emailFrom, email, subject,
 
 	return []byte(message)
 }
+
+func (tD *AttendeeTicketPurchaseEmailData) GetPreHeader() *string {
+	return nil
+}

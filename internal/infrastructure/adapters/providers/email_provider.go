@@ -51,7 +51,7 @@ func (p *EmailProvider) Send(n *domain.Notification) (string, error) {
 			return "", err
 		}
 
-		html, err := p.renderer.Render(*n.Content.Template, subject, emailData)
+		html, err := p.renderer.Render(*n.Content.Template, subject, emailData, emailData.GetPreHeader())
 		if err != nil {
 			return "", err
 		}

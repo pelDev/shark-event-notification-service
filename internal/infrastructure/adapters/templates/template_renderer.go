@@ -40,6 +40,7 @@ func NewGoTemplateRenderer(fsys fs.FS) (ports.TemplateRenderer, error) {
 func (r *GoTemplateRenderer) Render(
 	templateName, subject string,
 	data any,
+	preHeader *string,
 ) (string, error) {
 	templateNameFull := fmt.Sprintf("%s.html", templateName)
 
@@ -58,9 +59,14 @@ func (r *GoTemplateRenderer) Render(
 		return "", err
 	}
 
+	preHeaderStr := ""
+	if preHeader != nil {
+		preHeaderStr = *preHeader
+	}
+
 	layoutData := EmailLayoutData{
 		Subject:        subject,
-		Preheader:      "",
+		Preheader:      preHeaderStr,
 		UnsubscribeURL: "https://eventor.com/unsubscribe",
 		Body:           template.HTML(buf.String()),
 	}

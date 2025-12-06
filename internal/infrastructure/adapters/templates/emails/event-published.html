@@ -1,0 +1,45 @@
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:40px; background:linear-gradient(90deg,#C91CF4,#B4545C);">
+            <h1 style="margin:0; color:#fff; font-family:system-ui; font-size:26px;">
+                🚀 Your Event Is Live!
+            </h1>
+            <p style="margin:10px 0 0; font-family:system-ui; color:#ffeaff; font-size:15px;">
+                {{ .EventTitle }} has been successfully published.
+            </p>
+        </td>
+    </tr>
+</table>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:32px 40px; background:#ffffff;">
+            <div style="font-family:system-ui; color:#333; font-size:16px; line-height:1.6;">
+
+                <p>Your event is now visible to the public and ready to start receiving attendees.</p>
+
+                <p>You can preview how it looks and share it with your community.</p>
+
+                <div style="margin-top:22px;">
+                    <a href="{{ .EventUrl }}" style="display:inline-block;padding:12px 20px;background:#C91CF4;color:#fff;
+                    border-radius:8px;text-decoration:none;font-weight:600;">
+                        View Public Event Page
+                    </a>
+                </div>
+
+                <p style="margin-top:26px;">
+                    Want to track sales and performance?
+                    Head back to your dashboard anytime to monitor ticket activity.
+                </p>
+
+                <div style="margin-top:14px;">
+                    <a href="https://eventor.com/dashboard/events/{{ .EventID }}" style="display:inline-block;padding:12px 20px;background:#B4545C;color:#fff;
+                    border-radius:8px;text-decoration:none;font-weight:600;">
+                        Open Event Dashboard
+                    </a>
+                </div>
+
+            </div>
+        </td>
+    </tr>
+</table>

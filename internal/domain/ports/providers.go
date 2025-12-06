@@ -9,5 +9,5 @@ type NotificationProvider interface {
 }
 
 type TemplateRenderer interface {
-	Render(templateName, subject string, data any) (string, error)
+	Render(templateName, subject string, data any, preHeader *string) (string, error)
 }

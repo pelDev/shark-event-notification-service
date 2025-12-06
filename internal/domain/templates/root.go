@@ -8,6 +8,7 @@ import (
 type EmailTemplateData interface {
 	isEmailTemplateData()
 	GetMessage(emailFrom, email, subject, html string) []byte
+	GetPreHeader() *string
 }
 
 func ParseTemplateData(templateName string, data map[string]interface{}, out *EmailTemplateData) error {
@@ -31,6 +32,22 @@ func ParseTemplateData(templateName string, data map[string]interface{}, out *Em
 		var result OtpData
 		if err := json.Unmarshal(raw, &result); err != nil {
 			return fmt.Errorf("failed to unmarshal otp email data: %w", err)
+		}
+		*out = &result
+		return nil
+
+	case "welcome":
+		var result WelcomeData
+		if err := json.Unmarshal(raw, &result); err != nil {
+			return fmt.Errorf("failed to unmarshal welcome email data: %w", err)
+		}
+		*out = &result
+		return nil
+
+	case "event-published":
+		var result EventPublishedData
+		if err := json.Unmarshal(raw, &result); err != nil {
+			return fmt.Errorf("failed to unmarshal event published email data: %w", err)
 		}
 		*out = &result
 		return nil

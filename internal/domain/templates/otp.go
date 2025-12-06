@@ -28,3 +28,7 @@ func (o *OtpData) GetMessage(emailFrom, email, subject, html string) []byte {
 
 	return []byte(message)
 }
+
+func (o *OtpData) GetPreHeader() *string {
+	return nil
+}
