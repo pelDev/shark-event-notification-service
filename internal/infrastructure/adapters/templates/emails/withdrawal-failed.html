@@ -1,0 +1,63 @@
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:40px; background:#B4545C;">
+            <h1 style="margin:0; color:#fff; font-family:system-ui; font-size:26px;">
+                ❌ Withdrawal Failed
+            </h1>
+            <p style="margin:10px 0 0; font-family:system-ui; color:#ffeaff; font-size:15px;">
+                We were unable to complete your withdrawal.
+            </p>
+        </td>
+    </tr>
+</table>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
+    <tr>
+        <td style="padding:32px 40px;">
+            <div style="font-family:system-ui; color:#333; font-size:16px; line-height:1.6;">
+
+                <p>Your withdrawal request could not be processed successfully.</p>
+
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;">
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Amount</td>
+                        <td style="text-align:right; font-weight:600;">{{ .Amount }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Reference ID</td>
+                        <td style="text-align:right;">{{ .ReferenceID }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Destination</td>
+                        <td style="text-align:right;">{{ .Destination }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Request Date</td>
+                        <td style="text-align:right;">{{ .Date }}</td>
+                    </tr>
+                </table>
+
+                {{ if .Reason }}
+                <div
+                    style="margin-top:24px; padding:16px; background:#fff0f0; border-left:4px solid #B4545C; border-radius:4px;">
+                    <strong style="color:#B4545C;">Reason provided:</strong>
+                    <p style="margin:6px 0; color:#444;">{{ .Reason }}</p>
+                </div>
+                {{ end }}
+
+                <p style="margin-top:22px;">
+                    The withdrawal amount has been returned to your Eventor balance.
+                    You may update your payout details or try again at any time.
+                </p>
+
+                <div style="margin-top:24px;">
+                    <a href="https://eventor.com/dashboard/payouts" style="display:inline-block;padding:12px 20px;background:#C91CF4;color:#fff;
+                    border-radius:8px;text-decoration:none;font-weight:600;">
+                        View Payouts
+                    </a>
+                </div>
+
+            </div>
+        </td>
+    </tr>
+</table>
