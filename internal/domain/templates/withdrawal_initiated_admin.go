@@ -3,10 +3,10 @@ package templates
 import "fmt"
 
 type WithdrawalInitiatedAdminData struct {
-	Amount      float64 `json:"amount"`
-	ReferenceID string  `json:"reference_id"`
-	Destination string  `json:"destination"`
-	Date        string  `json:"date"`
+	Amount      string `json:"amount"`
+	ReferenceID string `json:"reference_id"`
+	Destination string `json:"destination"`
+	Date        string `json:"date"`
 
 	Name  string `json:"name"`
 	Email string `json:"email"`

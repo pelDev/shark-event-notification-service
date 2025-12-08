@@ -3,11 +3,11 @@ package templates
 import "fmt"
 
 type WithdrawalInitiatedData struct {
-	Amount      float64 `json:"amount"`       // 120000
-	ReferenceID string  `json:"reference_id"` // WDL-9383-ABX
-	Destination string  `json:"destination"`  // "Bank Account •••• 2210"
-	Date        string  `json:"date"`         // "Dec 2, 2025"
-	Mode        string  `json:"mode"`         // "manual"
+	Amount      string `json:"amount"`       // 120000
+	ReferenceID string `json:"reference_id"` // WDL-9383-ABX
+	Destination string `json:"destination"`  // "Bank Account •••• 2210"
+	Date        string `json:"date"`         // "Dec 2, 2025"
+	Mode        string `json:"mode"`         // "manual"
 }
 
 func (o *WithdrawalInitiatedData) isEmailTemplateData() {}
