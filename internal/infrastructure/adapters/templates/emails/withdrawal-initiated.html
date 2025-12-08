@@ -1,0 +1,64 @@
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:40px; background:linear-gradient(90deg,#C91CF4,#B4545C);">
+            <h1 style="margin:0; color:#fff; font-family:system-ui; font-size:26px;">
+                ⏳ Withdrawal Initiated
+            </h1>
+            <p style="margin:10px 0 0; font-family:system-ui; color:#ffeaff; font-size:15px;">
+                Your withdrawal request has been received and is pending manual processing.
+            </p>
+        </td>
+    </tr>
+</table>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
+    <tr>
+        <td style="padding:32px 40px;">
+            <div style="font-family:system-ui; color:#333; font-size:16px; line-height:1.6;">
+
+                <p>We’ve received your withdrawal request and it’s currently in <strong>manual processing</strong>.</p>
+
+                <p>
+                    Once our finance team completes the verification and payout step, you’ll receive a
+                    <strong>Withdrawal Complete</strong> email notification.
+                </p>
+
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;">
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Amount</td>
+                        <td style="text-align:right; font-weight:600;">{{ .Amount }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Reference ID</td>
+                        <td style="text-align:right;">{{ .ReferenceID }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Destination</td>
+                        <td style="text-align:right;">{{ .Destination }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Request Date</td>
+                        <td style="text-align:right;">{{ .Date }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Mode</td>
+                        <td style="text-align:right;">{{ .Mode }}</td>
+                    </tr>
+                </table>
+
+                <p style="margin-top:22px;">
+                    The process may take some time. Please wait for 1 to 2 working days before submitting a complaint.
+                    You can monitor the request from your dashboard.
+                </p>
+
+                <div style="margin-top:22px;">
+                    <a href="https://organizer.eventor.com.ng/payment" style="display:inline-block;padding:12px 20px;background:#C91CF4;color:#fff;
+                    border-radius:8px;text-decoration:none;font-weight:600;">
+                        View Transaction
+                    </a>
+                </div>
+
+            </div>
+        </td>
+    </tr>
+</table>
