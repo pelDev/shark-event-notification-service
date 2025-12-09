@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-TAG="0.0.1.dev"
+TAG="0.0.2.dev"
 IMAGE="shark_event_notification_svc"
 DOCKER_USERNAME=""
 PLATFORMS="linux/amd64,linux/arm64"

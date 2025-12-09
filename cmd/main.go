@@ -40,7 +40,7 @@ func main() {
 	defer repo.Close()
 
 	// Initialize gRPC connection
-	conn, err := grpc.NewClient("localhost:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(config.UserGrpcTarget, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}

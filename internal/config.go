@@ -32,10 +32,11 @@ type SQLiteConfig struct {
 }
 
 type Config struct {
-	SQLite  SQLiteConfig    `mapstructure:"sqlite"`
-	Kafka   KafkaConfig     `mapstructure:"kafka"`
-	Email   EmailSMTPConfig `mapstructure:"email"`
-	Service ServiceConfig   `mapstructure:"service"`
+	SQLite         SQLiteConfig    `mapstructure:"sqlite"`
+	Kafka          KafkaConfig     `mapstructure:"kafka"`
+	Email          EmailSMTPConfig `mapstructure:"email"`
+	Service        ServiceConfig   `mapstructure:"service"`
+	UserGrpcTarget string          `mapstructure:"user_grpc_target"`
 }
 
 func LoadConfig() Config {
