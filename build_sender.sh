@@ -1,18 +1,20 @@
 #!/bin/bash
 set -e
 
-TAG="0.0.2"
+TAG="0.0.3"
 IMAGE="shark_event_notification_sender"
 DOCKER_USERNAME=""
 PLATFORMS="linux/amd64,linux/arm64"
 PUSH_ONLY=false
+DOCKER_FILE="Dockerfile"
 
-while getopts i:t:u:p:P flag
+while getopts i:t:u:f:p:P flag
 do
     case "${flag}" in
         i) IMAGE=${OPTARG};;
         t) TAG=${OPTARG};;
         u) DOCKER_USERNAME=${OPTARG};;
+        f) DOCKER_FILE=${OPTARG};;
         p) PLATFORMS=${OPTARG};;
         P) PUSH_ONLY=true;;
     esac
@@ -44,6 +46,7 @@ if [ "$PUSH_ONLY" = true ]; then
     echo "🚀 Building and pushing directly to registry..."
     docker buildx build \
         --platform $PLATFORMS \
+        --file $DOCKER_FILE \
         --tag $IMAGE_NAME \
         --tag $DOCKER_USERNAME/$IMAGE:latest \
         --push \
@@ -53,6 +56,7 @@ else
     # Build for local use (single platform)
     docker buildx build \
         --platform linux/amd64 \
+        --file $DOCKER_FILE \
         --tag $IMAGE_NAME \
         --load \
         .
@@ -60,6 +64,7 @@ else
     echo "🚀 Building and pushing multi-platform to registry..."
     docker buildx build \
         --platform $PLATFORMS \
+        --file $DOCKER_FILE \
         --tag $IMAGE_NAME \
         --tag $DOCKER_USERNAME/$IMAGE:latest \
         --push \
