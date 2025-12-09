@@ -10,7 +10,6 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /app/notification-service .
-COPY --from=builder /app/configs ./configs
 
 EXPOSE 8080
 CMD ["./notification-service"]
