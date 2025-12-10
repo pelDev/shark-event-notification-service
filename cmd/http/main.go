@@ -93,6 +93,7 @@ func main() {
 
 		providerResponse, err := emailProvider.Send(&n)
 		if err != nil {
+			log.Println("Error sending email:", err.Error())
 			http.Error(w, "failed to send notification: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
