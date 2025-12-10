@@ -107,7 +107,7 @@ func main() {
 		fmt.Println("Email sent →", providerResponse)
 	}))
 
-	port := os.Getenv("HTTP_PORT")
+	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
