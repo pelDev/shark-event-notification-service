@@ -9,7 +9,6 @@ import (
 	"os"
 	"time"
 
-	config "github.com/commitshark/notification-svc/internal"
 	"github.com/commitshark/notification-svc/internal/domain"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/providers"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/templates"
@@ -50,8 +49,6 @@ func requireAPIKey(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func main() {
-	cfg := config.LoadConfig()
-
 	// Renderer
 	renderer, err := templates.NewGoTemplateRenderer(templates.Files)
 	if err != nil {
@@ -60,17 +57,17 @@ func main() {
 
 	auth := smtp.PlainAuth(
 		"",
-		getEnvOrDefault("SMTP_USERNAME", cfg.Email.Username),
-		getEnvOrDefault("SMTP_PASSWORD", cfg.Email.Password),
-		getEnvOrDefault("SMTP_HOST", cfg.Email.SMTPHost),
+		getEnvOrDefault("SMTP_USERNAME", ""),
+		getEnvOrDefault("SMTP_PASSWORD", ""),
+		getEnvOrDefault("SMTP_HOST", ""),
 	)
 
 	emailProvider := providers.NewEmailProvider(
-		getEnvOrDefault("SMTP_HOST", cfg.Email.SMTPHost),
-		getEnvIntOrDefault("SMTP_PORT", cfg.Email.SMTPPort),
-		getEnvOrDefault("SMTP_USERNAME", cfg.Email.Username),
-		getEnvOrDefault("SMTP_PASSWORD", cfg.Email.Password),
-		getEnvOrDefault("SMTP_FROM", cfg.Email.From),
+		getEnvOrDefault("SMTP_HOST", ""),
+		getEnvIntOrDefault("SMTP_PORT", 587),
+		getEnvOrDefault("SMTP_USERNAME", ""),
+		getEnvOrDefault("SMTP_PASSWORD", ""),
+		getEnvOrDefault("SMTP_FROM", ""),
 		renderer,
 		auth,
 	)
