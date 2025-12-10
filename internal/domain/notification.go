@@ -6,17 +6,17 @@ import (
 )
 
 type Notification struct {
-	ID               string
-	Type             NotificationType
-	Recipient        Recipient
-	Content          Content
-	Status           NotificationStatus
-	ProviderResponse string
-	CreatedAt        time.Time
-	SentAt           *time.Time
-	RetryCount       int
-	MaxRetries       int
-	Version          int // For optimistic locking
+	ID               string             `json:"id"`
+	Type             NotificationType   `json:"type"`
+	Recipient        Recipient          `json:"recipient"`
+	Content          Content            `json:"content"`
+	Status           NotificationStatus `json:"status"`
+	ProviderResponse string             `json:"provider_response"`
+	CreatedAt        time.Time          `json:"created_at"`
+	SentAt           *time.Time         `json:"sent_at,omitempty"`
+	RetryCount       int                `json:"retry_count"`
+	MaxRetries       int                `json:"max_retries"`
+	Version          int                `json:"version"`
 }
 
 // Business rules

@@ -11,10 +11,10 @@ type UserContactInfo struct {
 }
 
 type Recipient struct {
-	ID       string
-	Email    *string
-	Phone    *string
-	DeviceID *string
+	ID       string  `json:"id"`
+	Email    *string `json:"email,omitempty"`
+	Phone    *string `json:"phone,omitempty"`
+	DeviceID *string `json:"device_id,omitempty"`
 }
 
 func NewRecipient(id string, email, phone, deviceId *string) (*Recipient, error) {
@@ -30,11 +30,11 @@ func NewRecipient(id string, email, phone, deviceId *string) (*Recipient, error)
 }
 
 type Content struct {
-	Title    string
-	Body     *string
-	Data     *map[string]interface{}
-	HTML     *string
-	Template *string
+	Title    string                  `json:"title"`
+	Body     *string                 `json:"body,omitempty"`
+	Data     *map[string]interface{} `json:"data,omitempty"`
+	HTML     *string                 `json:"html,omitempty"`
+	Template *string                 `json:"template,omitempty"`
 }
 
 func NewContent(title string, body *string, data *map[string]interface{}, html, template *string) (*Content, error) {
