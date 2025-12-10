@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"net/smtp"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,7 +15,6 @@ import (
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/kafka"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/providers"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/sqlite"
-	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/templates"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -26,69 +24,59 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// Load configuration
-	config := config.LoadConfig()
+	log.Println("Notification worker starting…")
 
-	// Initialize SMTP Client
-	auth := smtp.PlainAuth("", config.Email.Username, config.Email.Password, config.Email.SMTPHost)
+	// Load configuration
+	cfg := config.LoadConfig()
 
 	// Initialize SQLite repository
-	repo, err := sqlite.NewSQLiteNotificationRepository(config.SQLite.Path)
+	repo, err := sqlite.NewSQLiteNotificationRepository(cfg.SQLite.Path)
 	if err != nil {
 		log.Fatalf("Failed to initialize repository: %v", err)
 	}
 	defer repo.Close()
 
 	// Initialize gRPC connection
-	conn, err := grpc.NewClient(config.UserGrpcTarget, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(cfg.UserGrpcTarget, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}
 	defer conn.Close()
 
-	renderer, err := templates.NewGoTemplateRenderer(templates.Files)
-	if err != nil {
-		log.Fatalf("failed to initialize template renderer: %v", err)
-	}
-
 	userDataAdapter := grpcclient.NewUserDataGRPCClient(conn)
 
 	// Initialize providers
 	providerList := []ports.NotificationProvider{
-		providers.NewEmailProvider(
-			config.Email.SMTPHost,
-			config.Email.SMTPPort,
-			config.Email.Username,
-			config.Email.Password,
-			config.Email.From,
-			renderer,
-			auth,
-		),
+		providers.NewHTTPEmailProvider(cfg.HTTPEmail.Url, cfg.HTTPEmail.APIKey),
 		providers.NewSMSProvider(),
 		providers.NewPushProvider(),
 	}
 
-	// Initialize service (no event publisher for now)
+	// Initialize service
 	notificationService := services.NewNotificationService(repo, providerList)
 
-	// Initialize Kafka handler
+	// Kafka handler & consumer
 	kafkaHandler := kafka.NewKafkaMessageHandler(notificationService, userDataAdapter)
-
-	// Initialize Kafka consumer (using segmentio/kafka-go)
-	consumer := kafka.NewKafkaConsumer(config.Kafka, kafkaHandler)
+	consumer := kafka.NewKafkaConsumer(cfg.Kafka, kafkaHandler)
 
 	// Start retry worker
-	go startRetryWorker(ctx, notificationService, config.Service)
+	go startRetryWorker(ctx, notificationService, cfg.Service)
 
 	// Start Kafka consumer
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("Kafka consumer panic: %v", r)
+				cancel()
+			}
+		}()
 		if err := consumer.Start(ctx); err != nil {
 			log.Printf("Kafka consumer error: %v", err)
 			cancel()
 		}
 	}()
 
-	// Graceful shutdown
+	// Wait for shutdown
 	waitForShutdown(cancel)
 
 	log.Println("Notification service shutdown complete")

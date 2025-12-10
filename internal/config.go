@@ -16,6 +16,11 @@ type EmailSMTPConfig struct {
 	From     string `mapstructure:"from"`
 }
 
+type HttpEmailConfig struct {
+	Url    string `mapstructure:"url"`
+	APIKey string `mapstructure:"api_key"`
+}
+
 type ServiceConfig struct {
 	RetryBatchSize int           `mapstructure:"retry_batch_size"`
 	RetryInterval  time.Duration `mapstructure:"retry_interval"`
@@ -35,6 +40,7 @@ type Config struct {
 	SQLite         SQLiteConfig    `mapstructure:"sqlite"`
 	Kafka          KafkaConfig     `mapstructure:"kafka"`
 	Email          EmailSMTPConfig `mapstructure:"email"`
+	HTTPEmail      HttpEmailConfig `mapstructure:"http_email"`
 	Service        ServiceConfig   `mapstructure:"service"`
 	UserGrpcTarget string          `mapstructure:"user_grpc_target"`
 }
