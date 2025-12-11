@@ -1,0 +1,43 @@
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:40px; background:#C91CF4;">
+            <h1 style="margin:0; color:#fff; font-family:system-ui; font-size:26px;">
+                👤 New User Sign-Up
+            </h1>
+            <p style="margin:10px 0 0; font-family:system-ui; color:#f9e8ff; font-size:15px;">
+                A new user just joined Eventor.
+            </p>
+        </td>
+    </tr>
+</table>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
+    <tr>
+        <td style="padding:32px 40px;">
+            <div style="font-family:system-ui; color:#333; font-size:16px; line-height:1.6;">
+
+                <p>A new user has registered. Here are the details:</p>
+
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;">
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Name</td>
+                        <td style="text-align:right; font-weight:600;">{{ .Name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Email</td>
+                        <td style="text-align:right;">{{ .Email }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">User ID</td>
+                        <td style="text-align:right;">{{ .UserID }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 0; color:#6b7280;">Signed Up</td>
+                        <td style="text-align:right;">{{ .CreatedAt }}</td>
+                    </tr>
+                </table>
+
+            </div>
+        </td>
+    </tr>
+</table>
