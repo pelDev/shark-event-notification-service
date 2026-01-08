@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	config "github.com/commitshark/notification-svc/internal"
 	"github.com/commitshark/notification-svc/internal/domain"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/providers"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/templates"
@@ -30,9 +31,8 @@ func getEnvIntOrDefault(key string, fallback int) int {
 	return fallback
 }
 
-func requireAPIKey(next http.HandlerFunc) http.HandlerFunc {
+func requireAPIKey(next http.HandlerFunc, expected string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		expected := os.Getenv("API_KEY")
 		if expected == "" {
 			http.Error(w, "API_KEY not configured on server", http.StatusInternalServerError)
 			return
@@ -49,25 +49,29 @@ func requireAPIKey(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func main() {
+	cfg := config.LoadConfig()
+
 	// Renderer
 	renderer, err := templates.NewGoTemplateRenderer(templates.Files)
 	if err != nil {
 		log.Fatalf("template init error: %v", err)
 	}
 
+	fmt.Printf("User: %s\nPassword: %s\nHost: %s\n", cfg.Email.Username, cfg.Email.Password, cfg.Email.SMTPHost)
+
 	auth := smtp.PlainAuth(
 		"",
-		getEnvOrDefault("SMTP_USERNAME", ""),
-		getEnvOrDefault("SMTP_PASSWORD", ""),
-		getEnvOrDefault("SMTP_HOST", ""),
+		cfg.Email.Username,
+		cfg.Email.Password,
+		cfg.Email.SMTPHost,
 	)
 
 	emailProvider := providers.NewEmailProvider(
-		getEnvOrDefault("SMTP_HOST", ""),
-		getEnvIntOrDefault("SMTP_PORT", 587),
-		getEnvOrDefault("SMTP_USERNAME", ""),
-		getEnvOrDefault("SMTP_PASSWORD", ""),
-		getEnvOrDefault("SMTP_FROM", ""),
+		cfg.Email.SMTPHost,
+		cfg.Email.SMTPPort,
+		cfg.Email.Username,
+		cfg.Email.Password,
+		cfg.Email.From,
 		renderer,
 		auth,
 	)
@@ -93,7 +97,7 @@ func main() {
 
 		providerResponse, err := emailProvider.Send(&n)
 		if err != nil {
-			log.Println("Error sending email:", err.Error())
+			log.Println("Error sending email:", err)
 			http.Error(w, "failed to send notification: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -106,7 +110,7 @@ func main() {
 		})
 
 		fmt.Println("Email sent →", providerResponse)
-	}))
+	}, cfg.HTTPEmail.APIKey))
 
 	port := os.Getenv("PORT")
 	if port == "" {

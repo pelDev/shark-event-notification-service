@@ -2,6 +2,7 @@ package providers
 
 import (
 	"fmt"
+	"mime"
 	"net/smtp"
 	"strconv"
 
@@ -71,6 +72,41 @@ func (p *EmailProvider) Send(n *domain.Notification) (string, error) {
 
 		fmt.Printf("Email sent successfully to %s", email)
 
+		return fmt.Sprintf("Email sent successfully to %s", email), nil
+	} else if n.Content.Body != nil && *n.Content.Body != "" {
+		encodedSubject := mime.QEncoding.Encode("utf-8", subject)
+
+		fmt.Println("Send plain mail:", encodedSubject)
+
+		message := fmt.Sprintf(
+			"From: \"Eventor\" <%s>\r\n"+
+				"To: %s\r\n"+
+				"Subject: %s\r\n"+
+				"MIME-Version: 1.0\r\n"+
+				"Content-Type: text/html; charset=\"UTF-8\"\r\n"+
+				"Reply-To: %s\r\n"+
+				"\r\n"+
+				"<!DOCTYPE html><html><body>%s</body></html>\r\n",
+			p.emailFrom,
+			email,
+			encodedSubject,
+			p.emailFrom,
+			*n.Content.Body,
+		)
+
+		err := smtp.SendMail(
+			p.smtpHost+":"+strconv.Itoa(p.smtpPort),
+			p.smtpAuth,
+			p.emailFrom,
+			[]string{email},
+			[]byte(message),
+		)
+
+		if err != nil {
+			return "", err
+		}
+
+		fmt.Printf("Email sent successfully to %s\n", email)
 		return fmt.Sprintf("Email sent successfully to %s", email), nil
 	}
 
