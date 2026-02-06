@@ -1,8 +1,8 @@
 package config
 
 import (
-	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/spf13/viper"
@@ -49,18 +49,29 @@ func LoadConfig() Config {
 	viper.AddConfigPath(".") // look in current directory
 	viper.SetConfigType("yaml")
 	viper.SetConfigName("config")
-	viper.AutomaticEnv() // override with env variables if present
+	viper.AddConfigPath("/root")
 
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("Error reading config file: %v", err)
+	viper.AutomaticEnv()
+
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	_ = viper.BindEnv("email.smtp_host", "EMAIL_SMTP_HOST")
+	_ = viper.BindEnv("email.smtp_port", "EMAIL_SMTP_PORT")
+	_ = viper.BindEnv("email.username", "EMAIL_USERNAME")
+	_ = viper.BindEnv("email.password", "EMAIL_PASSWORD")
+	_ = viper.BindEnv("email.from", "EMAIL_FROM")
+	_ = viper.BindEnv("http_email.api_key", "HTTP_EMAIL_API_KEY")
+
+	if err := viper.ReadInConfig(); err == nil {
+		log.Println("Loaded config file:", viper.ConfigFileUsed())
+	} else {
+		log.Println("No config file found, using environment variables")
 	}
 
 	var cfg Config
 	if err := viper.Unmarshal(&cfg); err != nil {
 		log.Fatalf("Unable to decode into struct: %v", err)
 	}
-
-	fmt.Println("Configuration initialized. Using config file:", viper.ConfigFileUsed())
 
 	return cfg
 }
