@@ -7,13 +7,15 @@ import (
 )
 
 type AttendeeTicketPurchaseEmailData struct {
-	TicketID   string `json:"ticket_id"`   // {{ ticket_id }}
-	QR         string `json:"qr"`          // {{ qr }} (base64 image)
-	EventID    string `json:"event_id"`    // {{ event_id }}
-	EventTitle string `json:"event_title"` // {{ event_title }}
-	TicketType string `json:"ticket_type"` // {{ ticket_type }}
-	Date       string `json:"date"`        // {{ date }}
-	Amount     string `json:"amount"`      // {{ amount }}
+	TicketID   string  `json:"ticket_id"`   // {{ ticket_id }}
+	QR         string  `json:"qr"`          // {{ qr }} (base64 image or URL)
+	EventID    string  `json:"event_id"`    // {{ event_id }}
+	EventTitle string  `json:"event_title"` // {{ event_title }}
+	TicketType string  `json:"ticket_type"` // {{ ticket_type }}
+	Date       string  `json:"date"`        // {{ date }}
+	Amount     string  `json:"amount"`      // {{ amount }}
+	IsRSVP     bool    `json:"is_rsvp"`     // {{ is_rsvp }}
+	Location   *string `json:"location"`    // {{ location }} (nullable)
 }
 
 func (tD *AttendeeTicketPurchaseEmailData) isEmailTemplateData() {}

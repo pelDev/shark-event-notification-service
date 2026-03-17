@@ -21,10 +21,16 @@
             <div
                 style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#1f2937; font-size:16px; line-height:1.6;">
 
+                {{ if .IsRSVP }}
+                <p style="margin:0 0 16px 0;">
+                    🎉 Your RSVP has been confirmed! We look forward to seeing you.
+                </p>
+                {{ else }}
                 <p style="margin:0 0 16px 0;">
                     Below are your ticket details. Screenshot it, save it, or just show it directly from your inbox at
                     the event. ✨
                 </p>
+                {{ end }}
 
                 <!-- Ticket Box -->
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
@@ -41,15 +47,18 @@
                             <!-- Ticket Details -->
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
                                 style="margin-top:12px;">
+
                                 <tr>
                                     <td style="padding:6px 0; font-weight:600; color:#6b7280;">Ticket ID</td>
                                     <td style="padding:6px 0; text-align:right; color:#111827;">{{ .TicketID }}</td>
                                 </tr>
 
+                                {{ if .TicketType }}
                                 <tr>
                                     <td style="padding:6px 0; font-weight:600; color:#6b7280;">Ticket Type</td>
                                     <td style="padding:6px 0; text-align:right; color:#111827;">{{ .TicketType }}</td>
                                 </tr>
+                                {{ end }}
 
                                 <tr>
                                     <td style="padding:6px 0; font-weight:600; color:#6b7280;">Date</td>
@@ -57,14 +66,28 @@
                                 </tr>
 
                                 <tr>
-                                    <td style="padding:6px 0; font-weight:600; color:#6b7280;">Amount Paid</td>
-                                    <td style="padding:6px 0; text-align:right; color:#111827;">{{ .Amount }}</td>
+                                    <td style="padding:6px 0; font-weight:600; color:#6b7280;">
+                                        {{ if .IsRSVP }}Entry{{ else }}Amount Paid{{ end }}
+                                    </td>
+                                    <td style="padding:6px 0; text-align:right; color:#111827;">
+                                        {{ .Amount }}
+                                    </td>
                                 </tr>
+
+                                {{ if .Location }}
+                                <tr>
+                                    <td style="padding:6px 0; font-weight:600; color:#6b7280;">Location</td>
+                                    <td style="padding:6px 0; text-align:right; color:#111827;">
+                                        {{ .Location }}
+                                    </td>
+                                </tr>
+                                {{ end }}
+
                             </table>
 
                             <!-- QR Code -->
                             <div style="margin-top:24px; text-align:center;">
-                                <img src="cid:qr@local" alt="QR Code"
+                                <img src="{{ .QR }}" alt="QR Code"
                                     style="width:160px; max-width:160px; height:auto; border:1px solid #e5e7eb; border-radius:8px;">
                                 <p style="margin:12px 0 0 0; color:#6b7280; font-size:13px;">
                                     Show this QR code at the event entrance.
