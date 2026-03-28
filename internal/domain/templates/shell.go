@@ -2,10 +2,11 @@ package templates
 
 import (
 	"fmt"
+	"html/template"
 )
 
 type ShellData struct {
-	Body string `json:"body"`
+	Body template.HTML `json:"body"`
 }
 
 func (tS *ShellData) isEmailTemplateData() {}
