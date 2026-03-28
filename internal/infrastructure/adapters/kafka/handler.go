@@ -37,7 +37,7 @@ func (h *KafkaMessageHandler) HandleMessage(ctx context.Context, ev events.Domai
 
 	user, err := h.userDataSource.GetContactInfo(ctx, payload.UserID)
 	if err != nil {
-		return fmt.Errorf("notification[%s]: getContactInfo failed: %w", ev.ID, err)
+		return fmt.Errorf("notification[%s]: getContactInfo failed: %w, user: %s", ev.ID, err, payload.UserID)
 	}
 
 	// Convert to domain objects
