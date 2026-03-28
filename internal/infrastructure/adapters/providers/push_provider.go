@@ -21,7 +21,7 @@ func (p *PushProvider) Supports(notificationType domain.NotificationType) bool {
 	return notificationType == domain.PushNotification
 }
 
-func (p *PushProvider) Send(n *domain.Notification) (string, error) {
+func (p *PushProvider) Send(n *domain.Notification, isMarketing bool) (string, error) {
 	if n.Recipient.DeviceID == nil || *n.Recipient.DeviceID == "" {
 		return "", fmt.Errorf("device id missing for SMS")
 	}

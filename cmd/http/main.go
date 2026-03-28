@@ -74,6 +74,23 @@ func main() {
 		auth,
 	)
 
+	marketingAuth := smtp.PlainAuth(
+		"",
+		cfg.MarketingEmail.Username,
+		cfg.MarketingEmail.Password,
+		cfg.MarketingEmail.SMTPHost,
+	)
+
+	marketingEmailProvider := providers.NewEmailProvider(
+		cfg.MarketingEmail.SMTPHost,
+		cfg.MarketingEmail.SMTPPort,
+		cfg.MarketingEmail.Username,
+		cfg.MarketingEmail.Password,
+		cfg.MarketingEmail.From,
+		renderer,
+		marketingAuth,
+	)
+
 	// HTTP server
 	mux := http.NewServeMux()
 	mux.HandleFunc("/send/email", requireAPIKey(func(w http.ResponseWriter, r *http.Request) {
@@ -82,18 +99,25 @@ func main() {
 			return
 		}
 
+		isMarketing := r.URL.Query().Get("is_marketing") == "true"
+
 		var n domain.Notification
 		if err := json.NewDecoder(r.Body).Decode(&n); err != nil {
 			http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		if !emailProvider.Supports(n.Type) {
+		provider := emailProvider
+		if isMarketing {
+			provider = marketingEmailProvider
+		}
+
+		if !provider.Supports(n.Type) {
 			http.Error(w, "Notification Type not supported: "+string(n.Type), http.StatusBadRequest)
 			return
 		}
 
-		providerResponse, err := emailProvider.Send(&n)
+		providerResponse, err := provider.Send(&n)
 		if err != nil {
 			log.Println("Error sending email:", err.Error())
 			http.Error(w, "failed to send notification: "+err.Error(), http.StatusInternalServerError)

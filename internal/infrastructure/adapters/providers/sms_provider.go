@@ -21,7 +21,7 @@ func (p *SMSProvider) Supports(notificationType domain.NotificationType) bool {
 	return notificationType == domain.SMSNotification
 }
 
-func (p *SMSProvider) Send(n *domain.Notification) (string, error) {
+func (p *SMSProvider) Send(n *domain.Notification, isMarketing bool) (string, error) {
 	if n.Recipient.Phone == nil || *n.Recipient.Phone == "" {
 		return "", fmt.Errorf("phone number missing for SMS")
 	}

@@ -109,25 +109,50 @@ func createTables(db *sql.DB) error {
 		}
 	}
 
+	// Migrate existing table if column doesn't exist
+	if err := migrateAddIsMarketing(tx); err != nil {
+		return fmt.Errorf("failed to migrate is_marketing: %w", err)
+	}
+
 	return tx.Commit()
+}
+
+func migrateAddIsMarketing(tx *sql.Tx) error {
+	// SQLite has no IF NOT EXISTS for columns, so check information_schema equivalent
+	var count int
+	err := tx.QueryRow(`
+		SELECT COUNT(*) FROM pragma_table_info('notifications') WHERE name = 'is_marketing'
+	`).Scan(&count)
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		_, err = tx.Exec(`ALTER TABLE notifications ADD COLUMN is_marketing INTEGER DEFAULT 0`)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (r *SQLiteNotificationRepository) Save(ctx context.Context, notification *domain.Notification) error {
 
 	query := `
-	INSERT INTO notifications (
-		id, type, recipient_id, recipient_email, recipient_phone,
-		recipient_device, title, body, data, status, provider_response,
-		created_at, sent_at, retry_count, max_retries, html, template, version
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	ON CONFLICT(id) DO UPDATE SET
-		status = excluded.status,
-		provider_response = excluded.provider_response,
-		sent_at = excluded.sent_at,
-		retry_count = excluded.retry_count,
-		version = version + 1
-	WHERE version = ?
-	`
+INSERT INTO notifications (
+    id, type, recipient_id, recipient_email, recipient_phone,
+    recipient_device, title, body, data, status, provider_response,
+    created_at, sent_at, retry_count, max_retries, html, template, is_marketing, version
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+ON CONFLICT(id) DO UPDATE SET
+    status = excluded.status,
+    provider_response = excluded.provider_response,
+    sent_at = excluded.sent_at,
+    retry_count = excluded.retry_count,
+    version = version + 1
+WHERE version = ?
+`
 
 	var sentAt interface{}
 	if notification.SentAt != nil {
@@ -161,6 +186,7 @@ func (r *SQLiteNotificationRepository) Save(ctx context.Context, notification *d
 		notification.MaxRetries,
 		notification.Content.HTML,
 		notification.Content.Template,
+		notification.IsMarketing,
 		notification.Version,
 		notification.Version - 1, // For optimistic locking
 	}
@@ -201,6 +227,7 @@ func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) 
 		sent_at,
 		retry_count,
 		max_retries,
+		is_marketing,
 		version
 	FROM notifications 
 	WHERE id = ?
@@ -221,7 +248,7 @@ func (r *SQLiteNotificationRepository) FindByID(ctx context.Context, id string) 
 	err := row.Scan(
 		&n.ID, &typeStr, &recipientID, &recipientEmail, &recipientPhone, &recipientDevice,
 		&title, &body, &dataJSON, &html, &template, &statusStr, &providerResponse,
-		&createdAtStr, &sentAtStr, &n.RetryCount, &n.MaxRetries, &n.Version,
+		&createdAtStr, &sentAtStr, &n.RetryCount, &n.MaxRetries, &n.IsMarketing, &n.Version,
 	)
 	if err == sql.ErrNoRows {
 		return nil, fmt.Errorf("notification not found: %s", id)

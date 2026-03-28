@@ -62,6 +62,11 @@ func (h *KafkaMessageHandler) HandleMessage(ctx context.Context, ev events.Domai
 		return fmt.Errorf("notification[%s]: invalid content: %w", ev.ID, err)
 	}
 
+	isShell := 0
+	if payload.Type == "shell" {
+		isShell = 1
+	}
+
 	// Process through application service
 	return h.service.ProcessNotification(
 		ctx,
@@ -70,5 +75,6 @@ func (h *KafkaMessageHandler) HandleMessage(ctx context.Context, ev events.Domai
 		*recipient,
 		*content,
 		3,
+		isShell,
 	)
 }

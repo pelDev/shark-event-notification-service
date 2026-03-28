@@ -40,6 +40,7 @@ type Config struct {
 	SQLite         SQLiteConfig    `mapstructure:"sqlite"`
 	Kafka          KafkaConfig     `mapstructure:"kafka"`
 	Email          EmailSMTPConfig `mapstructure:"email"`
+	MarketingEmail EmailSMTPConfig `mapstructure:"marketing_email"`
 	HTTPEmail      HttpEmailConfig `mapstructure:"http_email"`
 	Service        ServiceConfig   `mapstructure:"service"`
 	UserGrpcTarget string          `mapstructure:"user_grpc_target"`
@@ -55,11 +56,21 @@ func LoadConfig() Config {
 
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
+	// Transactional email
 	_ = viper.BindEnv("email.smtp_host", "EMAIL_SMTP_HOST")
 	_ = viper.BindEnv("email.smtp_port", "EMAIL_SMTP_PORT")
 	_ = viper.BindEnv("email.username", "EMAIL_USERNAME")
 	_ = viper.BindEnv("email.password", "EMAIL_PASSWORD")
 	_ = viper.BindEnv("email.from", "EMAIL_FROM")
+
+	// Marketing email
+	_ = viper.BindEnv("marketing_email.smtp_host", "MARKETING_EMAIL_SMTP_HOST")
+	_ = viper.BindEnv("marketing_email.smtp_port", "MARKETING_EMAIL_SMTP_PORT")
+	_ = viper.BindEnv("marketing_email.username", "MARKETING_EMAIL_USERNAME")
+	_ = viper.BindEnv("marketing_email.password", "MARKETING_EMAIL_PASSWORD")
+	_ = viper.BindEnv("marketing_email.from", "MARKETING_EMAIL_FROM")
+
+	// HTTP email
 	_ = viper.BindEnv("http_email.api_key", "HTTP_EMAIL_API_KEY")
 
 	if err := viper.ReadInConfig(); err == nil {

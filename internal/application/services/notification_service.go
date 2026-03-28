@@ -32,7 +32,7 @@ func (s *NotificationService) ProcessNotification(
 	notificationType domain.NotificationType,
 	recipient domain.Recipient,
 	content domain.Content,
-	maxRetries int,
+	maxRetries, isMarketing int,
 ) error {
 
 	// Create notification aggregate
@@ -42,6 +42,7 @@ func (s *NotificationService) ProcessNotification(
 		recipient,
 		content,
 		maxRetries,
+		isMarketing,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create notification: %w, notificationType: %s", err, notificationType)
@@ -87,7 +88,7 @@ func (s *NotificationService) SendNotification(ctx context.Context, notification
 	}
 
 	// Attempt to send
-	providerResponse, err := provider.Send(notification)
+	providerResponse, err := provider.Send(notification, notification.IsMarketing == 1)
 	if err != nil {
 		notification.MarkAsFailed(err.Error())
 		if saveErr := s.repo.Save(ctx, notification); saveErr != nil {

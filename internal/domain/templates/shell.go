@@ -18,6 +18,10 @@ func (tS *ShellData) GetMessage(emailFrom, email, subject, html string) []byte {
 			"Subject: %s\r\n"+
 			"MIME-Version: 1.0\r\n"+
 			"Content-Type: text/html; charset=\"UTF-8\"\r\n"+
+			"Precedence: bulk\r\n"+
+			"X-Mailer: Eventor Newsletter\r\n"+
+			"List-Unsubscribe: <mailto:unsubscribe@eventor.com.ng?subject=unsubscribe>\r\n"+
+			"List-Unsubscribe-Post: List-Unsubscribe=One-Click\r\n"+
 			"\r\n"+
 			"%s\r\n",
 		emailFrom,

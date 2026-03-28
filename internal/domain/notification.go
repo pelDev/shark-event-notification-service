@@ -17,6 +17,7 @@ type Notification struct {
 	RetryCount       int                `json:"retry_count"`
 	MaxRetries       int                `json:"max_retries"`
 	Version          int                `json:"version"`
+	IsMarketing      int                `json:"is_marketing"`
 }
 
 // Business rules
@@ -64,7 +65,7 @@ func NewNotification(
 	notificationType NotificationType,
 	recipient Recipient,
 	content Content,
-	maxRetries int,
+	maxRetries, isMarketing int,
 ) (*Notification, error) {
 
 	if id == "" {

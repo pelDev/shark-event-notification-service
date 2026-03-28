@@ -31,7 +31,7 @@ func (p *HttpEmailProvider) Name() string {
 	return "http-email-provider"
 }
 
-func (p *HttpEmailProvider) Send(n *domain.Notification) (string, error) {
+func (p *HttpEmailProvider) Send(n *domain.Notification, isMarketing bool) (string, error) {
 	if n.Recipient.Email == nil || *n.Recipient.Email == "" {
 		return "", fmt.Errorf("email missing for SMS")
 	}
@@ -41,7 +41,12 @@ func (p *HttpEmailProvider) Send(n *domain.Notification) (string, error) {
 		return "", fmt.Errorf("failed to marshal notification: %w", err)
 	}
 
-	req, err := http.NewRequest("POST", p.URL, bytes.NewReader(payloadBytes))
+	url := p.URL
+	if isMarketing {
+		url += "?is_marketing=true"
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewReader(payloadBytes))
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}
