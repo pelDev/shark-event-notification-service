@@ -11,7 +11,8 @@ type ListNotificationsRequest struct {
 	Page        int    `json:"-"` // from query param
 	PageSize    int    `json:"-"` // from query param
 	Status      string `json:"-"` // from query param, optional filter
-	Type        string `json:"-"` // from query param, optional filter
+	Type        string `json:"-"`
+	Query       string `json:"-"`
 	IsMarketing *bool  `json:"-"`
 }
 

@@ -9,6 +9,7 @@ type NotificationFilter struct {
 	Type        *NotificationType   `json:"type"`
 	IsMarketing *bool               `json:"is_marketing"`
 	Status      *NotificationStatus `json:"status"`
+	Query       string              `json:"q"`
 }
 
 type Notification struct {

@@ -91,6 +91,7 @@ func parseListNotificationsRequest(r *http.Request) (*applicationdto.ListNotific
 	}
 
 	// Parse optional filters
+	req.Query = r.URL.Query().Get("q")
 	req.Status = r.URL.Query().Get("status")
 	req.Type = r.URL.Query().Get("type")
 

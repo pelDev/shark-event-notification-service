@@ -11,6 +11,7 @@ import (
 	"github.com/commitshark/notification-svc/internal/domain"
 	"github.com/commitshark/notification-svc/internal/domain/ports"
 	"github.com/commitshark/notification-svc/internal/utils"
+	"github.com/google/uuid"
 	_ "modernc.org/sqlite"
 )
 
@@ -439,6 +440,18 @@ func (r *SQLiteNotificationRepository) PaginatedList(ctx context.Context, page i
 	if filter.Type != nil && *filter.Type != "" {
 		conditions = append(conditions, "type = ?")
 		args = append(args, filter.Type)
+	}
+
+	if filter.Query != "" {
+		q := "%" + strings.ToLower(filter.Query) + "%"
+		conditions = append(conditions, "(LOWER(title) LIKE ? OR LOWER(recipient_email) LIKE ?)")
+		args = append(args, q, q)
+
+		// If it's a valid UUID, match exactly
+		if _, err := uuid.Parse(filter.Query); err == nil {
+			conditions = append(conditions, "recipient_id = ?")
+			args = append(args, filter.Query)
+		}
 	}
 
 	// Add recipient filter (search across multiple recipient fields)
