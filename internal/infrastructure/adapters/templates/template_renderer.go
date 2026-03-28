@@ -67,7 +67,7 @@ func (r *GoTemplateRenderer) Render(
 	layoutData := EmailLayoutData{
 		Subject:        subject,
 		Preheader:      preHeaderStr,
-		UnsubscribeURL: "https://eventor.com/unsubscribe",
+		UnsubscribeURL: "https://id.eventor.com.ng/email/unsubscribe",
 		Body:           template.HTML(buf.String()),
 	}
 
