@@ -46,6 +46,7 @@ func (h *NotificationHandler) ListNotifications(w http.ResponseWriter, r *http.R
 		Status:      status,
 		Type:        notifType,
 		IsMarketing: req.IsMarketing,
+		Query:       req.Query,
 	}
 
 	// Get paginated notifications from repository
