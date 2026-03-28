@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+type NotificationFilter struct {
+	Type        *NotificationType   `json:"type"`
+	IsMarketing *bool               `json:"is_marketing"`
+	Status      *NotificationStatus `json:"status"`
+}
+
 type Notification struct {
 	ID               string             `json:"id"`
 	Type             NotificationType   `json:"type"`
@@ -81,15 +87,16 @@ func NewNotification(
 	}
 
 	return &Notification{
-		ID:         id,
-		Type:       notificationType,
-		Recipient:  recipient,
-		Content:    content,
-		Status:     StatusPending,
-		CreatedAt:  time.Now(),
-		MaxRetries: maxRetries,
-		RetryCount: 0,
-		Version:    1,
+		ID:          id,
+		Type:        notificationType,
+		Recipient:   recipient,
+		Content:     content,
+		Status:      StatusPending,
+		CreatedAt:   time.Now(),
+		MaxRetries:  maxRetries,
+		RetryCount:  0,
+		Version:     1,
+		IsMarketing: isMarketing,
 	}, nil
 }
 

@@ -34,7 +34,6 @@ func (s *NotificationService) ProcessNotification(
 	content domain.Content,
 	maxRetries, isMarketing int,
 ) error {
-
 	// Create notification aggregate
 	notification, err := domain.NewNotification(
 		id,

@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,6 +17,7 @@ import (
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/kafka"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/providers"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/sqlite"
+	infrahttp "github.com/commitshark/notification-svc/internal/interfaces/http"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -76,10 +79,43 @@ func main() {
 		}
 	}()
 
-	// Wait for shutdown
-	waitForShutdown(cancel)
+	router := infrahttp.NewRouter(repo)
 
-	log.Println("Notification service shutdown complete")
+	// HTTP server
+	server := &http.Server{
+		Addr:         fmt.Sprintf(":%v", cfg.HttpPort),
+		Handler:      router,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
+
+	serverErr := make(chan error, 1)
+	go func() {
+		log.Printf("🚀 Server listening on :%v", cfg.HttpPort)
+		serverErr <- server.ListenAndServe()
+	}()
+
+	sig := waitForShutdown()
+	log.Printf("Received signal: %v", sig)
+
+	cancel() // stop workers (kafka, retry, etc.)
+
+	log.Println("Shutting down HTTP server...")
+
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Printf("HTTP server shutdown error: %v", err)
+	}
+
+	// Wait for server goroutine to exit
+	if err := <-serverErr; err != nil && err != http.ErrServerClosed {
+		log.Fatalf("Server failed: %v", err)
+	}
+
+	log.Println("Shutdown complete")
 }
 
 func startRetryWorker(ctx context.Context, service *services.NotificationService, config struct {
@@ -101,14 +137,8 @@ func startRetryWorker(ctx context.Context, service *services.NotificationService
 	}
 }
 
-func waitForShutdown(cancel context.CancelFunc) {
+func waitForShutdown() os.Signal {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-
-	sig := <-sigChan
-	log.Printf("Received signal: %v", sig)
-	cancel()
-
-	// Give services time to shutdown gracefully
-	time.Sleep(2 * time.Second)
+	return <-sigChan
 }

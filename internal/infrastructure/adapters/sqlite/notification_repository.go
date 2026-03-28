@@ -5,9 +5,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/commitshark/notification-svc/internal/domain"
+	"github.com/commitshark/notification-svc/internal/domain/ports"
 	"github.com/commitshark/notification-svc/internal/utils"
 	_ "modernc.org/sqlite"
 )
@@ -16,7 +18,7 @@ type SQLiteNotificationRepository struct {
 	db *sql.DB
 }
 
-func NewSQLiteNotificationRepository(dbPath string) (*SQLiteNotificationRepository, error) {
+func NewSQLiteNotificationRepository(dbPath string) (ports.NotificationRepository, error) {
 	// SQLite with WAL mode for better concurrency
 	dsn := fmt.Sprintf("%s?_journal=WAL&_timeout=5000&_fk=true", dbPath)
 
@@ -135,6 +137,75 @@ func migrateAddIsMarketing(tx *sql.Tx) error {
 	}
 
 	return nil
+}
+
+func scanNotification(rows *sql.Rows) (*domain.Notification, error) {
+	var n domain.Notification
+	var recipientID string
+	var recipientEmail, recipientPhone, recipientDevice, html, template sql.NullString
+	var title, statusStr, typeStr string
+	var body, dataJSON sql.NullString
+	var providerResponse sql.NullString
+	var createdAtStr string
+	var sentAtStr sql.NullString
+
+	err := rows.Scan(
+		&n.ID, &typeStr, &recipientID, &recipientEmail, &recipientPhone, &recipientDevice,
+		&title, &body, &dataJSON, &html, &template, &statusStr, &providerResponse,
+		&createdAtStr, &sentAtStr, &n.RetryCount, &n.MaxRetries, &n.IsMarketing, &n.Version,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse JSON data
+	var data map[string]interface{}
+	if dataJSON.Valid && dataJSON.String != "" {
+		if err := json.Unmarshal([]byte(dataJSON.String), &data); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal data: %w", err)
+		}
+	}
+
+	// Parse timestamps
+	createdAt, err := time.Parse(time.RFC3339, createdAtStr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse created_at: %w", err)
+	}
+
+	var sentAt *time.Time
+	if sentAtStr.Valid {
+		t, err := time.Parse(time.RFC3339, sentAtStr.String)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse sent_at: %w", err)
+		}
+		sentAt = &t
+	}
+
+	// Build domain objects
+	recipient := domain.Recipient{
+		ID:       recipientID,
+		Email:    utils.SqlNullableString(recipientEmail),
+		Phone:    utils.SqlNullableString(recipientPhone),
+		DeviceID: utils.SqlNullableString(recipientDevice),
+	}
+
+	content := domain.Content{
+		Title:    title,
+		Body:     utils.SqlNullableString(body),
+		Data:     &data,
+		HTML:     utils.SqlNullableString(html),
+		Template: utils.SqlNullableString(template),
+	}
+
+	n.Type = domain.NotificationType(typeStr)
+	n.Status = domain.NotificationStatus(statusStr)
+	n.Recipient = recipient
+	n.Content = content
+	n.ProviderResponse = providerResponse.String
+	n.CreatedAt = createdAt
+	n.SentAt = sentAt
+
+	return &n, nil
 }
 
 func (r *SQLiteNotificationRepository) Save(ctx context.Context, notification *domain.Notification) error {
@@ -341,6 +412,113 @@ func (r *SQLiteNotificationRepository) FindPending(ctx context.Context, limit in
 	}
 
 	return notifications, nil
+}
+
+func (r *SQLiteNotificationRepository) PaginatedList(ctx context.Context, page int, pageSize int, filter domain.NotificationFilter) ([]*domain.Notification, int, error) {
+	// Calculate offset
+	offset := (page - 1) * pageSize
+
+	// Build base query with filters
+	baseQuery := `
+        FROM notifications 
+        WHERE 1=1
+    `
+	countQuery := `SELECT COUNT(*) ` + baseQuery
+
+	// Build conditions and args
+	conditions := []string{}
+	args := []interface{}{}
+
+	// Add status filter
+	if filter.Status != nil && *filter.Status != "" {
+		conditions = append(conditions, "status = ?")
+		args = append(args, filter.Status)
+	}
+
+	// Add type filter
+	if filter.Type != nil && *filter.Type != "" {
+		conditions = append(conditions, "type = ?")
+		args = append(args, filter.Type)
+	}
+
+	// Add recipient filter (search across multiple recipient fields)
+	if filter.IsMarketing != nil {
+		conditions = append(conditions, `
+            is_marketing = ?
+        `)
+		args = append(args, filter.IsMarketing)
+	}
+
+	// Build WHERE clause
+	whereClause := ""
+	if len(conditions) > 0 {
+		whereClause = " AND " + strings.Join(conditions, " AND ")
+	}
+
+	// Get total count
+	var total int
+	countQuery += whereClause
+	err := r.db.QueryRowContext(ctx, countQuery, args...).Scan(&total)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to count notifications: %w", err)
+	}
+
+	if total == 0 {
+		return []*domain.Notification{}, 0, nil
+	}
+
+	// Build data query
+	dataQuery := `
+        SELECT 
+            id,
+            type,
+            recipient_id,
+            recipient_email,
+            recipient_phone,
+            recipient_device,
+            title,
+            body,
+            data,
+            html,
+            template,
+            status,
+            provider_response,
+            created_at,
+            sent_at,
+            retry_count,
+            max_retries,
+            is_marketing,
+            version
+    ` + baseQuery + whereClause + `
+        ORDER BY created_at DESC
+        LIMIT ? OFFSET ?
+    `
+
+	// Add pagination args
+	args = append(args, pageSize, offset)
+
+	// Execute query
+	rows, err := r.db.QueryContext(ctx, dataQuery, args...)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to query notifications: %w", err)
+	}
+	defer rows.Close()
+
+	// Scan results
+	notifications := make([]*domain.Notification, 0)
+	for rows.Next() {
+		n, err := scanNotification(rows)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed to scan notification: %w", err)
+		}
+		notifications = append(notifications, n)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, 0, fmt.Errorf("error iterating rows: %w", err)
+	}
+
+	return notifications, total, nil
 }
 
 func (r *SQLiteNotificationRepository) UpdateStatus(

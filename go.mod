@@ -3,6 +3,7 @@ module github.com/commitshark/notification-svc
 go 1.24.4
 
 require (
+	github.com/go-chi/chi v1.5.5
 	github.com/segmentio/kafka-go v0.4.49
 	github.com/spf13/viper v1.21.0
 	google.golang.org/grpc v1.77.0

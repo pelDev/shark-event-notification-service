@@ -44,6 +44,7 @@ type Config struct {
 	HTTPEmail      HttpEmailConfig `mapstructure:"http_email"`
 	Service        ServiceConfig   `mapstructure:"service"`
 	UserGrpcTarget string          `mapstructure:"user_grpc_target"`
+	HttpPort       int             `mapstructure:"http_port"`
 }
 
 func LoadConfig() Config {
@@ -72,6 +73,9 @@ func LoadConfig() Config {
 
 	// HTTP email
 	_ = viper.BindEnv("http_email.api_key", "HTTP_EMAIL_API_KEY")
+
+	// HTTP port
+	_ = viper.BindEnv("http_port", "HTTP_PORT")
 
 	if err := viper.ReadInConfig(); err == nil {
 		log.Println("Loaded config file:", viper.ConfigFileUsed())
