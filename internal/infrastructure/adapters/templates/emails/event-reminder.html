@@ -1,0 +1,207 @@
+<!-- HERO BANNER -->
+<tr>
+    <td class="hero-pad"
+        style="background:linear-gradient(135deg,#C91CF4 0%,#8B0FBF 60%,#B4545C 100%);padding:32px 28px 36px;">
+        <p
+            style="margin:0 0 10px;font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,0.65);">
+            Event Reminder
+        </p>
+        <h1 style="margin:0 0 6px;font-size:26px;font-weight:700;color:#ffffff;line-height:1.25;letter-spacing:-0.3px;">
+            {{ .Event.Name }}
+        </h1>
+        {{ if .Occurrence.Label }}
+        <p style="margin:0 0 20px;font-size:14px;color:rgba(255,255,255,0.75);font-weight:500;">
+            {{ .Occurrence.Label }}
+        </p>
+        {{ end }}
+
+        <!-- Date / Time pill row -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;">
+            <tr>
+                <!-- Date pill -->
+                <td style="padding-right:8px;">
+                    <div
+                        style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 14px;backdrop-filter:blur(4px);">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"
+                            style="margin-right:7px;flex-shrink:0;">
+                            <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="rgba(255,255,255,0.9)"
+                                stroke-width="1.3" />
+                            <path d="M2 7h12" stroke="rgba(255,255,255,0.9)" stroke-width="1.3" />
+                            <path d="M5.5 2v2M10.5 2v2" stroke="rgba(255,255,255,0.9)" stroke-width="1.3"
+                                stroke-linecap="round" />
+                        </svg>
+                        <span style="font-size:13px;font-weight:600;color:#ffffff;white-space:nowrap;">
+                            {{ .Occurrence.StartDate }}
+                        </span>
+                    </div>
+                </td>
+                <!-- Time pill -->
+                <td>
+                    <div
+                        style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 14px;">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"
+                            style="margin-right:7px;flex-shrink:0;">
+                            <circle cx="8" cy="8" r="5.5" stroke="rgba(255,255,255,0.9)" stroke-width="1.3" />
+                            <path d="M8 5v3.5l2.5 1.5" stroke="rgba(255,255,255,0.9)" stroke-width="1.3"
+                                stroke-linecap="round" />
+                        </svg>
+                        <span style="font-size:13px;font-weight:600;color:#ffffff;white-space:nowrap;">
+                            {{ .Occurrence.StartTime }} – {{ .Occurrence.EndTime }}
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+
+<!-- SUBJECT / CUSTOM MESSAGE -->
+<tr>
+    <td style="padding:28px 28px 0;">
+        <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#111827;line-height:1.35;">
+            {{ .Subject }}
+        </p>
+        {{ if .CustomNote }}
+        <p style="margin:0;font-size:15px;color:#4b5563;line-height:1.65;">
+            {{ .CustomNote }}
+        </p>
+        {{ end }}
+    </td>
+</tr>
+
+<!-- INFO CARDS -->
+<tr>
+    <td style="padding:20px 28px 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+            style="background:#faf5ff;border:1px solid rgba(201,28,244,0.12);border-radius:12px;overflow:hidden;">
+
+            <!-- Location -->
+            <tr>
+                <td style="padding:14px 16px;border-bottom:1px solid rgba(201,28,244,0.10);">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <tr>
+                            <td style="width:32px;vertical-align:top;">
+                                <div
+                                    style="width:28px;height:28px;border-radius:8px;background:rgba(201,28,244,0.10);display:flex;align-items:center;justify-content:center;">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                        <path
+                                            d="M8 1.5C5.51 1.5 3.5 3.51 3.5 6c0 3.75 4.5 8.5 4.5 8.5s4.5-4.75 4.5-8.5c0-2.49-2.01-4.5-4.5-4.5z"
+                                            stroke="#C91CF4" stroke-width="1.3" />
+                                        <circle cx="8" cy="6" r="1.5" stroke="#C91CF4" stroke-width="1.2" />
+                                    </svg>
+                                </div>
+                            </td>
+                            <td style="padding-left:10px;vertical-align:top;">
+                                <p
+                                    style="margin:0 0 2px;font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:#9ca3af;">
+                                    Location</p>
+                                <p style="margin:0;font-size:14px;color:#111827;font-weight:500;line-height:1.45;">
+                                    {{ .Event.Venue.Name }}<br>
+                                    <span style="font-size:13px;color:#6b7280;font-weight:400;">{{ .Event.Venue.Address
+                                        }}</span>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <!-- Duration -->
+            <tr>
+                <td style="padding:14px 16px;border-bottom:1px solid rgba(201,28,244,0.10);">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <tr>
+                            <td style="width:32px;vertical-align:top;">
+                                <div
+                                    style="width:28px;height:28px;border-radius:8px;background:rgba(201,28,244,0.10);display:flex;align-items:center;justify-content:center;">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                        <circle cx="8" cy="9" r="5.5" stroke="#C91CF4" stroke-width="1.3" />
+                                        <path d="M8 6v3.5l2.2 2.2" stroke="#C91CF4" stroke-width="1.3"
+                                            stroke-linecap="round" />
+                                        <path d="M5.5 1.5h5" stroke="#C91CF4" stroke-width="1.3"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                </div>
+                            </td>
+                            <td style="padding-left:10px;vertical-align:top;">
+                                <p
+                                    style="margin:0 0 2px;font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:#9ca3af;">
+                                    Duration</p>
+                                <p style="margin:0;font-size:14px;color:#111827;font-weight:500;">
+                                    {{ .Occurrence.Duration }}
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <!-- Status & type badges -->
+            <tr>
+                <td style="padding:14px 16px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <tr>
+                            <td style="width:32px;vertical-align:top;">
+                                <div
+                                    style="width:28px;height:28px;border-radius:8px;background:rgba(201,28,244,0.10);display:flex;align-items:center;justify-content:center;">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                        <path d="M2.5 9.5l3-3 2.5 2.5 3.5-4.5" stroke="#C91CF4" stroke-width="1.3"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                        <rect x="1.5" y="1.5" width="13" height="13" rx="1.5" stroke="#C91CF4"
+                                            stroke-width="1.2" />
+                                    </svg>
+                                </div>
+                            </td>
+                            <td style="padding-left:10px;vertical-align:top;">
+                                <p
+                                    style="margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:#9ca3af;">
+                                    Event details</p>
+                                <div>
+                                    <!-- Status badge -->
+                                    <span
+                                        style="display:inline-block;margin:0 4px 4px 0;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:#f3e8ff;color:#7e22ce;letter-spacing:0.2px;">
+                                        {{ .Event.Status }}
+                                    </span>
+                                    <!-- Type badge -->
+                                    <span
+                                        style="display:inline-block;margin:0 4px 4px 0;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:#ede9fe;color:#6d28d9;">
+                                        {{ .Event.Type }}
+                                    </span>
+                                    <!-- Access badge -->
+                                    <span
+                                        style="display:inline-block;margin:0 4px 4px 0;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:#fdf2f8;color:#9d174d;">
+                                        {{ .Event.AccessType }}
+                                    </span>
+                                    {{ if .Event.RequiresPayment }}
+                                    <span
+                                        style="display:inline-block;margin:0 4px 4px 0;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:#fef3c7;color:#92400e;">
+                                        Paid · from ₦{{ .Event.MinTicketPrice }}
+                                    </span>
+                                    {{ else }}
+                                    <span
+                                        style="display:inline-block;margin:0 4px 4px 0;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:#d1fae5;color:#065f46;">
+                                        Free
+                                    </span>
+                                    {{ end }}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+
+<!-- CTA BUTTON -->
+<tr>
+    <td style="padding:24px 28px 28px;text-align:center;">
+        <a href="https://eventor.com.ng/explore/{{ .Event.Slug }}" class="cta-btn"
+            style="display:inline-block;background:linear-gradient(135deg,#C91CF4 0%,#8B0FBF 100%);color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:10px;letter-spacing:0.2px;text-decoration:none;">
+            View Event &rarr;
+        </a>
+        <p style="margin:12px 0 0;font-size:12px;color:#9ca3af;">
+            or copy this link: <span style="color:#C91CF4;">eventor.com.ng/explore/{{ .Event.Slug }}</span>
+        </p>
+    </td>
+</tr>
