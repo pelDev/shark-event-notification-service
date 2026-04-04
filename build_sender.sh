@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-TAG="0.0.28"
+TAG="0.0.29"
 IMAGE="shark_event_notification_sender"
 DOCKER_USERNAME=""
 PLATFORMS="linux/amd64,linux/arm64"
