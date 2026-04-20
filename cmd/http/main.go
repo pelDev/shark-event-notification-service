@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/smtp"
 	"os"
+	"strings"
 	"time"
 
 	config "github.com/commitshark/notification-svc/internal"
@@ -14,6 +15,17 @@ import (
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/providers"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/templates"
 )
+
+func extractEmailAddress(formattedFrom string) string {
+	// Check if it's in the format "Name <email@example.com>"
+	if start := strings.Index(formattedFrom, "<"); start != -1 {
+		if end := strings.Index(formattedFrom[start:], ">"); end != -1 {
+			return formattedFrom[start+1 : start+end]
+		}
+	}
+	// If no angle brackets, assume it's just the email address
+	return formattedFrom
+}
 
 func getEnvOrDefault(key, fallback string) string {
 	if v := os.Getenv(key); v != "" {
@@ -70,6 +82,7 @@ func main() {
 		cfg.Email.Username,
 		cfg.Email.Password,
 		cfg.Email.From,
+		cfg.Email.From,
 		renderer,
 		auth,
 	)
@@ -81,11 +94,14 @@ func main() {
 		cfg.MarketingEmail.SMTPHost,
 	)
 
+	fromEmail := extractEmailAddress(cfg.MarketingEmail.From)
+
 	marketingEmailProvider := providers.NewEmailProvider(
 		cfg.MarketingEmail.SMTPHost,
 		cfg.MarketingEmail.SMTPPort,
 		cfg.MarketingEmail.Username,
 		cfg.MarketingEmail.Password,
+		fromEmail,
 		cfg.MarketingEmail.From,
 		renderer,
 		marketingAuth,

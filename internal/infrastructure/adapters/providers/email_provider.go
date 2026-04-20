@@ -12,24 +12,26 @@ import (
 )
 
 type EmailProvider struct {
-	smtpHost     string
-	smtpPort     int
-	smtpUsername string
-	smtpPassword string
-	emailFrom    string
-	smtpAuth     smtp.Auth
-	renderer     ports.TemplateRenderer
+	smtpHost         string
+	smtpPort         int
+	smtpUsername     string
+	smtpPassword     string
+	emailFrom        string
+	emailFromDisplay string
+	smtpAuth         smtp.Auth
+	renderer         ports.TemplateRenderer
 }
 
-func NewEmailProvider(host string, port int, username, password, from string, renderer ports.TemplateRenderer, auth smtp.Auth) *EmailProvider {
+func NewEmailProvider(host string, port int, username, password, from, emailFromDisplay string, renderer ports.TemplateRenderer, auth smtp.Auth) *EmailProvider {
 	return &EmailProvider{
-		smtpHost:     host,
-		smtpPort:     port,
-		smtpUsername: username,
-		smtpPassword: password,
-		emailFrom:    from,
-		renderer:     renderer,
-		smtpAuth:     auth,
+		smtpHost:         host,
+		smtpPort:         port,
+		smtpUsername:     username,
+		smtpPassword:     password,
+		emailFrom:        from,
+		emailFromDisplay: emailFromDisplay,
+		renderer:         renderer,
+		smtpAuth:         auth,
 	}
 }
 
@@ -64,7 +66,7 @@ func (p *EmailProvider) Send(n *domain.Notification) (string, error) {
 			p.smtpAuth,
 			p.emailFrom,
 			[]string{email},
-			emailData.GetMessage(p.emailFrom, email, subject, html),
+			emailData.GetMessage(p.emailFromDisplay, email, subject, html),
 		)
 		if err != nil {
 			return "", err
