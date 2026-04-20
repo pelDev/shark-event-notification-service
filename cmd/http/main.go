@@ -112,6 +112,8 @@ func main() {
 			provider = marketingEmailProvider
 		}
 
+		log.Printf("[Http] Send notification is marketing = %v Provider = %s", isMarketing, provider.Name())
+
 		if !provider.Supports(n.Type) {
 			http.Error(w, "Notification Type not supported: "+string(n.Type), http.StatusBadRequest)
 			return
