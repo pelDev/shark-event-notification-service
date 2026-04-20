@@ -34,6 +34,8 @@ func (s *NotificationService) ProcessNotification(
 	content domain.Content,
 	maxRetries, isMarketing int,
 ) error {
+	log.Printf("[ProcessNotification] Is notification marketing (1/0) = %d", isMarketing)
+
 	// Create notification aggregate
 	notification, err := domain.NewNotification(
 		id,
@@ -85,6 +87,8 @@ func (s *NotificationService) SendNotification(ctx context.Context, notification
 	if provider == nil {
 		return fmt.Errorf("no provider supports notification type %s", notification.Type)
 	}
+
+	log.Printf("[SendNotification] Send notification marketing (1/0) = %d Provider = %s", notification.IsMarketing, provider.Name())
 
 	// Attempt to send
 	providerResponse, err := provider.Send(notification, notification.IsMarketing == 1)
