@@ -1,0 +1,163 @@
+<!-- HERO BANNER -->
+<tr>
+    <td class="hero-pad"
+        style="background:linear-gradient(135deg,#0F62FE 0%,#0043CE 60%,#6929C4 100%);padding:32px 28px 36px;">
+        <p
+            style="margin:0 0 10px;font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,0.65);">
+            Guest Invitation
+        </p>
+        <h1 style="margin:0 0 6px;font-size:26px;font-weight:700;color:#ffffff;line-height:1.25;letter-spacing:-0.3px;">
+            {{ .Event.Name }}
+        </h1>
+        <p style="margin:0 0 20px;font-size:14px;color:rgba(255,255,255,0.75);font-weight:500;">
+            You've been invited as a <strong style="color:#ffffff;">{{ .InvitationRole }}</strong>
+        </p>
+
+        <!-- Expires pill -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;">
+            <tr>
+                <td style="padding-right:8px;">
+                    <div
+                        style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 14px;backdrop-filter:blur(4px);">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"
+                            style="margin-right:7px;flex-shrink:0;">
+                            <circle cx="8" cy="8" r="5.5" stroke="rgba(255,255,255,0.9)" stroke-width="1.3" />
+                            <path d="M8 5v3.5l2.5 1.5" stroke="rgba(255,255,255,0.9)" stroke-width="1.3"
+                                stroke-linecap="round" />
+                        </svg>
+                        <span style="font-size:13px;font-weight:600;color:#ffffff;white-space:nowrap;">
+                            Expires {{ .Event.ExpiresAt }}
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+
+<!-- SUBJECT / CUSTOM MESSAGE -->
+<tr>
+    <td style="padding:28px 28px 0;">
+        <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#111827;line-height:1.35;">
+            {{ .Subject }}
+        </p>
+        {{ if .CustomNote }}
+        <p style="margin:0;font-size:15px;color:#4b5563;line-height:1.65;">
+            {{ .CustomNote }}
+        </p>
+        {{ end }}
+    </td>
+</tr>
+
+<!-- INFO CARD -->
+<tr>
+    <td style="padding:20px 28px 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+            style="background:#eff6ff;border:1px solid rgba(15,98,254,0.12);border-radius:12px;overflow:hidden;">
+
+            <!-- Event Name -->
+            <tr>
+                <td style="padding:14px 16px;border-bottom:1px solid rgba(15,98,254,0.10);">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <tr>
+                            <td style="width:32px;vertical-align:top;">
+                                <div
+                                    style="width:28px;height:28px;border-radius:8px;background:rgba(15,98,254,0.10);display:flex;align-items:center;justify-content:center;">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                        <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#0F62FE"
+                                            stroke-width="1.3" />
+                                        <path d="M2 7h12" stroke="#0F62FE" stroke-width="1.3" />
+                                        <path d="M5.5 2v2M10.5 2v2" stroke="#0F62FE" stroke-width="1.3"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                </div>
+                            </td>
+                            <td style="padding-left:10px;vertical-align:top;">
+                                <p
+                                    style="margin:0 0 2px;font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:#9ca3af;">
+                                    Event</p>
+                                <p style="margin:0;font-size:14px;color:#111827;font-weight:500;line-height:1.45;">
+                                    {{ .Event.Name }}
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <!-- Role -->
+            <tr>
+                <td style="padding:14px 16px;border-bottom:1px solid rgba(15,98,254,0.10);">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <tr>
+                            <td style="width:32px;vertical-align:top;">
+                                <div
+                                    style="width:28px;height:28px;border-radius:8px;background:rgba(15,98,254,0.10);display:flex;align-items:center;justify-content:center;">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                        <circle cx="8" cy="5" r="2.5" stroke="#0F62FE" stroke-width="1.3" />
+                                        <path d="M3 13.5c0-2.485 2.239-4.5 5-4.5s5 2.015 5 4.5" stroke="#0F62FE"
+                                            stroke-width="1.3" stroke-linecap="round" />
+                                    </svg>
+                                </div>
+                            </td>
+                            <td style="padding-left:10px;vertical-align:top;">
+                                <p
+                                    style="margin:0 0 2px;font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:#9ca3af;">
+                                    Your Role</p>
+                                <p style="margin:0;font-size:14px;color:#111827;font-weight:500;">
+                                    <span
+                                        style="display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:#dbeafe;color:#1d4ed8;">
+                                        {{ .InvitationRole }}
+                                    </span>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <!-- Expires At -->
+            <tr>
+                <td style="padding:14px 16px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <tr>
+                            <td style="width:32px;vertical-align:top;">
+                                <div
+                                    style="width:28px;height:28px;border-radius:8px;background:rgba(15,98,254,0.10);display:flex;align-items:center;justify-content:center;">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                        <circle cx="8" cy="9" r="5.5" stroke="#0F62FE" stroke-width="1.3" />
+                                        <path d="M8 6v3.5l2.2 2.2" stroke="#0F62FE" stroke-width="1.3"
+                                            stroke-linecap="round" />
+                                        <path d="M5.5 1.5h5" stroke="#0F62FE" stroke-width="1.3"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                </div>
+                            </td>
+                            <td style="padding-left:10px;vertical-align:top;">
+                                <p
+                                    style="margin:0 0 2px;font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:#9ca3af;">
+                                    Invitation Expires</p>
+                                <p style="margin:0;font-size:14px;color:#111827;font-weight:500;">
+                                    {{ .Event.ExpiresAt }}
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+
+<!-- CTA BUTTON -->
+<tr>
+    <td style="padding:24px 28px 28px;text-align:center;">
+        <a href="{{ .Link }}" class="cta-btn"
+            style="display:inline-block;background:linear-gradient(135deg,#0F62FE 0%,#6929C4 100%);color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:10px;letter-spacing:0.2px;text-decoration:none;">
+            Accept Invitation &rarr;
+        </a>
+        <p style="margin:12px 0 0;font-size:12px;color:#9ca3af;">
+            This invitation expires on <span style="color:#0F62FE;">{{ .Event.ExpiresAt }}</span>
+        </p>
+    </td>
+</tr>
