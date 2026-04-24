@@ -16,6 +16,7 @@ type AttendeeTicketPurchaseEmailData struct {
 	Amount     string  `json:"amount"`      // {{ amount }}
 	IsRSVP     bool    `json:"is_rsvp"`     // {{ is_rsvp }}
 	Location   *string `json:"location"`    // {{ location }} (nullable)
+	Admits     int     `json:"admits"`
 }
 
 func (tD *AttendeeTicketPurchaseEmailData) isEmailTemplateData() {}
