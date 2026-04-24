@@ -13,6 +13,7 @@ type GuestInviteData struct {
 	Event          GuestInviteEvent `json:"event"`
 	InvitationRole string           `json:"invitation_role"`
 	Link           string           `json:"link"`
+	Admits         int              `json:"admits"`
 }
 
 func (e *GuestInviteData) isEmailTemplateData() {}
