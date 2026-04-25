@@ -7,19 +7,34 @@ import (
 )
 
 type AttendeeTicketPurchaseEmailData struct {
-	TicketID   string  `json:"ticket_id"`   // {{ ticket_id }}
-	QR         string  `json:"qr"`          // {{ qr }} (base64 image or URL)
-	EventID    string  `json:"event_id"`    // {{ event_id }}
-	EventTitle string  `json:"event_title"` // {{ event_title }}
-	TicketType string  `json:"ticket_type"` // {{ ticket_type }}
-	Date       string  `json:"date"`        // {{ date }}
-	Amount     string  `json:"amount"`      // {{ amount }}
-	IsRSVP     bool    `json:"is_rsvp"`     // {{ is_rsvp }}
-	Location   *string `json:"location"`    // {{ location }} (nullable)
+	TicketID   string  `json:"ticket_id"`
+	QR         string  `json:"qr"`
+	EventID    string  `json:"event_id"`
+	EventTitle string  `json:"event_title"`
+	TicketType string  `json:"ticket_type"`
+	Date       string  `json:"date"`
+	Amount     string  `json:"amount"`
+	IsRSVP     bool    `json:"is_rsvp"`
+	Location   *string `json:"location"`
 	Admits     int     `json:"admits"`
+	QrBase64   *string `json:"-"`
 }
 
 func (tD *AttendeeTicketPurchaseEmailData) isEmailTemplateData() {}
+
+func wrapBase64(s string, lineLen int) string {
+	var buf strings.Builder
+	for len(s) > 0 {
+		chunk := lineLen
+		if chunk > len(s) {
+			chunk = len(s)
+		}
+		buf.WriteString(s[:chunk])
+		buf.WriteString("\r\n")
+		s = s[chunk:]
+	}
+	return buf.String()
+}
 
 func (tD *AttendeeTicketPurchaseEmailData) GetMessage(emailFrom, email, subject, html string) []byte {
 	boundary := fmt.Sprintf("mixed-%d", time.Now().UnixNano())
@@ -27,6 +42,10 @@ func (tD *AttendeeTicketPurchaseEmailData) GetMessage(emailFrom, email, subject,
 
 	// Strip data URL prefix if present
 	qrBase64 := strings.TrimPrefix(tD.QR, "data:image/png;base64,")
+	tD.QrBase64 = &qrBase64
+
+	// ✅ Wrap at 76 chars per RFC 2045
+	qrBase64Wrapped := wrapBase64(qrBase64, 76)
 
 	message := fmt.Sprintf(
 		"From: %s\r\n"+
@@ -43,9 +62,10 @@ func (tD *AttendeeTicketPurchaseEmailData) GetMessage(emailFrom, email, subject,
 			"--%s\r\n"+
 			"Content-Type: image/png\r\n"+
 			"Content-ID: <%s>\r\n"+
+			"Content-Disposition: inline; filename=\"qr.png\"\r\n"+ // ✅ Added
 			"Content-Transfer-Encoding: base64\r\n"+
 			"\r\n"+
-			"%s\r\n"+
+			"%s\r\n"+ // ✅ Now wrapped
 			"\r\n"+
 			"--%s--\r\n",
 		emailFrom,
@@ -56,7 +76,7 @@ func (tD *AttendeeTicketPurchaseEmailData) GetMessage(emailFrom, email, subject,
 		html,
 		boundary,
 		cid,
-		qrBase64,
+		qrBase64Wrapped, // ✅ Use wrapped version
 		boundary,
 	)
 
