@@ -17,7 +17,6 @@ type AttendeeTicketPurchaseEmailData struct {
 	IsRSVP     bool    `json:"is_rsvp"`
 	Location   *string `json:"location"`
 	Admits     int     `json:"admits"`
-	QrBase64   *string `json:"-"`
 }
 
 func (tD *AttendeeTicketPurchaseEmailData) isEmailTemplateData() {}
@@ -42,7 +41,6 @@ func (tD *AttendeeTicketPurchaseEmailData) GetMessage(emailFrom, email, subject,
 
 	// Strip data URL prefix if present
 	qrBase64 := strings.TrimPrefix(tD.QR, "data:image/png;base64,")
-	tD.QrBase64 = &qrBase64
 
 	// ✅ Wrap at 76 chars per RFC 2045
 	qrBase64Wrapped := wrapBase64(qrBase64, 76)
