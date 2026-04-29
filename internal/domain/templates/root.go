@@ -124,6 +124,14 @@ func ParseTemplateData(templateName string, data map[string]interface{}, out *Em
 		*out = &result
 		return nil
 
+	case "occurrence-cancelled":
+		var result OccurrenceCancelledData
+		if err := json.Unmarshal(raw, &result); err != nil {
+			return fmt.Errorf("failed to unmarshal occurrence cancelled email data: %w", err)
+		}
+		*out = &result
+		return nil
+
 	default:
 		return fmt.Errorf("unknown template name: %s", templateName)
 	}

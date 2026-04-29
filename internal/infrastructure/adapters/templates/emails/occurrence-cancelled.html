@@ -1,0 +1,141 @@
+<!-- HERO -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td class="hero-pad"
+            style="padding:36px 28px 32px; background:linear-gradient(135deg,#1a1a2e 0%,#2d1b4e 50%,#4a1942 100%);">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>
+                        <div
+                            style="display:inline-block;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.18);border-radius:20px;padding:4px 12px;margin-bottom:14px;">
+                            <span
+                                style="font-size:11px;font-family:system-ui;color:rgba(255,255,255,0.70);letter-spacing:1px;text-transform:uppercase;">Occurrence
+                                Update</span>
+                        </div>
+                        <h1
+                            style="margin:0 0 8px;font-family:system-ui;color:#ffffff;font-size:26px;font-weight:700;line-height:1.25;">
+                            🚫 Occurrence Cancelled</h1>
+                        <p
+                            style="margin:0;font-family:system-ui;color:rgba(255,255,255,0.65);font-size:14px;line-height:1.55;">
+                            One of your event sessions has been cancelled. Here's a summary of what was affected.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<!-- BODY -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
+    <tr>
+        <td style="padding:28px 28px 0;">
+
+            <!-- Event name -->
+            <p
+                style="margin:0 0 4px;font-family:system-ui;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;">
+                Event</p>
+            <h2 style="margin:0 0 22px;font-family:system-ui;font-size:20px;font-weight:700;color:#111827;">{{
+                .Event.Name }}</h2>
+
+            <!-- Cancelled occurrence card -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                style="border:1.5px solid #fde8ff;border-radius:12px;overflow:hidden;margin-bottom:22px;">
+                <tr>
+                    <td style="padding:14px 18px;background:#fdf4ff;border-bottom:1px solid #fde8ff;">
+                        <p
+                            style="margin:0;font-family:system-ui;font-size:12px;font-weight:600;color:#C91CF4;text-transform:uppercase;letter-spacing:0.6px;">
+                            Cancelled Session</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:18px;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                            style="font-family:system-ui;font-size:14px;color:#374151;">
+                            <tr>
+                                <td style="padding:5px 0;color:#6b7280;width:45%;">Label</td>
+                                <td style="padding:5px 0;font-weight:600;text-align:right;">{{ .Occurrence.Label }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:5px 0;color:#6b7280;">Date</td>
+                                <td style="padding:5px 0;font-weight:600;text-align:right;">{{ .Occurrence.StartDate }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:5px 0;color:#6b7280;">Time</td>
+                                <td style="padding:5px 0;font-weight:600;text-align:right;">{{ .Occurrence.StartTime }}
+                                    – {{ .Occurrence.EndTime }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:5px 0;color:#6b7280;">Duration</td>
+                                <td style="padding:5px 0;font-weight:600;text-align:right;">{{ .Occurrence.Duration }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Impact stats -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:26px;">
+                <tr>
+                    <td style="width:33%;padding-right:6px;">
+                        <div
+                            style="background:#f9fafb;border:1px solid #f3f4f6;border-radius:10px;padding:14px 12px;text-align:center;">
+                            <p
+                                style="margin:0 0 4px;font-family:system-ui;font-size:22px;font-weight:700;color:#111827;">
+                                {{ .Occurrence.Capacity }}</p>
+                            <p
+                                style="margin:0;font-family:system-ui;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;">
+                                Capacity</p>
+                        </div>
+                    </td>
+                    <td style="width:33%;padding:0 3px;">
+                        <div
+                            style="background:#fdf4ff;border:1px solid #fde8ff;border-radius:10px;padding:14px 12px;text-align:center;">
+                            <p
+                                style="margin:0 0 4px;font-family:system-ui;font-size:22px;font-weight:700;color:#C91CF4;">
+                                {{ .Occurrence.TicketsSold }}</p>
+                            <p
+                                style="margin:0;font-family:system-ui;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;">
+                                Tickets Sold</p>
+                        </div>
+                    </td>
+                    <td style="width:33%;padding-left:6px;">
+                        <div
+                            style="background:#f9fafb;border:1px solid #f3f4f6;border-radius:10px;padding:14px 12px;text-align:center;">
+                            <p
+                                style="margin:0 0 4px;font-family:system-ui;font-size:22px;font-weight:700;color:#111827;">
+                                {{ .Occurrence.AttendeeCount }}</p>
+                            <p
+                                style="margin:0;font-family:system-ui;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;">
+                                Attendees</p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Cancelled at -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;margin-bottom:26px;">
+                <tr>
+                    <td style="padding:12px 16px;">
+                        <p style="margin:0;font-family:system-ui;font-size:13px;color:#92400e;">
+                            ⏱ Cancelled on <strong>{{ .CancelledAt }}</strong>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- CTA -->
+            <div style="margin-bottom:28px;">
+                <a href="https://organizer.eventornigeria.com/events/{{ .Event.Id }}/settings/occurrences?occurrence={{ .Occurrence.ID }}" target="_blank"
+                    rel="noopener" class="cta-btn"
+                    style="display:inline-block;padding:13px 22px;background:linear-gradient(135deg,#C91CF4,#8B0FBF);color:#ffffff;border-radius:9px;text-decoration:none;font-family:system-ui;font-size:14px;font-weight:600;letter-spacing:0.2px;">
+                    View Event Occurrences →
+                </a>
+            </div>
+
+        </td>
+    </tr>
+</table>
