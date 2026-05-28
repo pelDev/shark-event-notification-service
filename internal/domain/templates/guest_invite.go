@@ -9,9 +9,9 @@ type GuestInviteEvent struct {
 
 type GuestInviteData struct {
 	Subject        string           `json:"subject"`
-	CustomNote     string           `json:"custom_note"`
 	Event          GuestInviteEvent `json:"event"`
 	InvitationRole string           `json:"invitation_role"`
+	InviteMessage  *string          `json:"invite_message,omitempty"`
 	Link           string           `json:"link"`
 	Admits         int              `json:"admits"`
 }
