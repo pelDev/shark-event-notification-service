@@ -18,15 +18,9 @@
             <tr>
                 <td style="padding-right:8px;">
                     <div
-                        style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 14px;backdrop-filter:blur(4px);">
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"
-                            style="margin-right:7px;flex-shrink:0;">
-                            <circle cx="8" cy="8" r="5.5" stroke="rgba(255,255,255,0.9)" stroke-width="1.3" />
-                            <path d="M8 5v3.5l2.5 1.5" stroke="rgba(255,255,255,0.9)" stroke-width="1.3"
-                                stroke-linecap="round" />
-                        </svg>
+                        style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 14px;">
                         <span style="font-size:13px;font-weight:600;color:#ffffff;white-space:nowrap;">
-                            Expires {{ .Event.ExpiresAt }}
+                            ⏰ Expires {{ .Event.ExpiresAt }}
                         </span>
                     </div>
                 </td>
@@ -35,23 +29,33 @@
     </td>
 </tr>
 
-<!-- SUBJECT / CUSTOM MESSAGE -->
+<!-- CTA BUTTON — moved up so it's visible without scrolling -->
 <tr>
-    <td style="padding:28px 28px 0;">
-        <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#111827;line-height:1.35;">
-            {{ .Subject }}
+    <td style="padding:24px 28px 4px;text-align:center;">
+        <a href="{{ .Link }}" class="cta-btn"
+            style="display:inline-block;background:linear-gradient(135deg,#0F62FE 0%,#6929C4 100%);color:#ffffff;font-size:16px;font-weight:700;padding:16px 40px;border-radius:10px;letter-spacing:0.2px;text-decoration:none;">
+            Accept Invitation &rarr;
+        </a>
+        <p style="margin:12px 0 0;font-size:12px;color:#9ca3af;">
+            Tap or click the button above to confirm your spot
         </p>
-        {{ if .InviteMessage }}
-        <p style="margin:0;font-size:15px;color:#4b5563;line-height:1.65;">
-            {{ .InviteMessage }}
-        </p>
-        {{ end }}
     </td>
 </tr>
 
-<!-- INFO CARD -->
+<!-- SUBJECT / CUSTOM MESSAGE -->
+{{ if .InviteMessage }}
 <tr>
     <td style="padding:20px 28px 0;">
+        <p style="margin:0;font-size:15px;color:#4b5563;line-height:1.65;">
+            {{ .InviteMessage }}
+        </p>
+    </td>
+</tr>
+{{ end }}
+
+<!-- INFO CARD -->
+<tr>
+    <td style="padding:20px 28px 28px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
             style="background:#eff6ff;border:1px solid rgba(15,98,254,0.12);border-radius:12px;overflow:hidden;">
 
@@ -62,14 +66,8 @@
                         <tr>
                             <td style="width:32px;vertical-align:top;">
                                 <div
-                                    style="width:28px;height:28px;border-radius:8px;background:rgba(15,98,254,0.10);display:flex;align-items:center;justify-content:center;">
-                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                        <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#0F62FE"
-                                            stroke-width="1.3" />
-                                        <path d="M2 7h12" stroke="#0F62FE" stroke-width="1.3" />
-                                        <path d="M5.5 2v2M10.5 2v2" stroke="#0F62FE" stroke-width="1.3"
-                                            stroke-linecap="round" />
-                                    </svg>
+                                    style="width:28px;height:28px;border-radius:8px;background:rgba(15,98,254,0.10);display:inline-block;text-align:center;line-height:28px;font-size:14px;">
+                                    📅
                                 </div>
                             </td>
                             <td style="padding-left:10px;vertical-align:top;">
@@ -92,12 +90,8 @@
                         <tr>
                             <td style="width:32px;vertical-align:top;">
                                 <div
-                                    style="width:28px;height:28px;border-radius:8px;background:rgba(15,98,254,0.10);display:flex;align-items:center;justify-content:center;">
-                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                        <circle cx="8" cy="5" r="2.5" stroke="#0F62FE" stroke-width="1.3" />
-                                        <path d="M3 13.5c0-2.485 2.239-4.5 5-4.5s5 2.015 5 4.5" stroke="#0F62FE"
-                                            stroke-width="1.3" stroke-linecap="round" />
-                                    </svg>
+                                    style="width:28px;height:28px;border-radius:8px;background:rgba(15,98,254,0.10);display:inline-block;text-align:center;line-height:28px;font-size:14px;">
+                                    👤
                                 </div>
                             </td>
                             <td style="padding-left:10px;vertical-align:top;">
@@ -123,8 +117,8 @@
                         <tr>
                             <td style="width:32px;vertical-align:top;">
                                 <div
-                                    style="width:28px;height:28px;border-radius:8px;background:rgba(15,98,254,0.10);display:flex;align-items:center;justify-content:center;">
-                           
+                                    style="width:28px;height:28px;border-radius:8px;background:rgba(15,98,254,0.10);display:inline-block;text-align:center;line-height:28px;font-size:14px;">
+                                    🎟️
                                 </div>
                             </td>
                             <td style="padding-left:10px;vertical-align:top;">
@@ -150,14 +144,8 @@
                         <tr>
                             <td style="width:32px;vertical-align:top;">
                                 <div
-                                    style="width:28px;height:28px;border-radius:8px;background:rgba(15,98,254,0.10);display:flex;align-items:center;justify-content:center;">
-                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                        <circle cx="8" cy="9" r="5.5" stroke="#0F62FE" stroke-width="1.3" />
-                                        <path d="M8 6v3.5l2.2 2.2" stroke="#0F62FE" stroke-width="1.3"
-                                            stroke-linecap="round" />
-                                        <path d="M5.5 1.5h5" stroke="#0F62FE" stroke-width="1.3"
-                                            stroke-linecap="round" />
-                                    </svg>
+                                    style="width:28px;height:28px;border-radius:8px;background:rgba(15,98,254,0.10);display:inline-block;text-align:center;line-height:28px;font-size:14px;">
+                                    ⏰
                                 </div>
                             </td>
                             <td style="padding-left:10px;vertical-align:top;">
@@ -173,18 +161,5 @@
                 </td>
             </tr>
         </table>
-    </td>
-</tr>
-
-<!-- CTA BUTTON -->
-<tr>
-    <td style="padding:24px 28px 28px;text-align:center;">
-        <a href="{{ .Link }}" class="cta-btn"
-            style="display:inline-block;background:linear-gradient(135deg,#0F62FE 0%,#6929C4 100%);color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:10px;letter-spacing:0.2px;text-decoration:none;">
-            Accept Invitation &rarr;
-        </a>
-        <p style="margin:12px 0 0;font-size:12px;color:#9ca3af;">
-            This invitation expires on <span style="color:#0F62FE;">{{ .Event.ExpiresAt }}</span>
-        </p>
     </td>
 </tr>
