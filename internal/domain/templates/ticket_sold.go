@@ -8,6 +8,8 @@ type TicketSoldData struct {
 	EventTitle string `json:"event_title"`
 	TicketType string `json:"ticket_type"`
 	EventID    string `json:"event_id"`
+	IsGate     bool   `json:"is_gate"`
+	Admits     int32  `json:"admits"`
 }
 
 func (tS *TicketSoldData) isEmailTemplateData() {}

@@ -13,15 +13,32 @@
   <tr>
     <td style="padding:28px 40px;">
       <div style="font-family:system-ui; color:#111; font-size:16px; line-height:1.6;">
-        <h2 style="margin:0 0 14px 0; font-size:20px;">{{ .EventTitle }}</h2>
+        <h2 style="margin:0 0 14px 0; font-size:20px;">
+          {{ .EventTitle }}
+          {{ if .IsGate }}
+          <span style="display:inline-block; margin-left:10px; padding:3px 10px;
+                       background:#fbe7ff; color:#C91CF4; border:1px solid #C91CF4;
+                       border-radius:20px; font-size:12px; font-weight:600;
+                       vertical-align:middle; letter-spacing:0.3px;">
+            🚪 Gate Entry
+          </span>
+          {{ end }}
+        </h2>
 
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-          <tr><td style="padding:6px 0; color:#6b7280;">Ticket Type</td><td style="text-align:right;">{{ .TicketType }}</td></tr>
+          <tr>
+            <td style="padding:6px 0; color:#6b7280;">Ticket Type</td>
+            <td style="text-align:right;">{{ .TicketType }}</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 0; color:#6b7280; border-top:1px solid #f3f4f6;">Admits</td>
+            <td style="text-align:right; border-top:1px solid #f3f4f6;">{{ .Admits }}</td>
+          </tr>
         </table>
 
         <div style="margin-top:22px;">
           <a href="https://organizer.eventor.com.ng/events/{{ .EventID }}/overview" target="_blank" rel="noopener"
-             style="display:inline-block;padding:12px 20px;background:#C91CF4;color:#fff;border-radius:8px;
+            style="display:inline-block;padding:12px 20px;background:#C91CF4;color:#fff;border-radius:8px;
                     text-decoration:none;font-weight:600;">
             View Event Overview
           </a>
