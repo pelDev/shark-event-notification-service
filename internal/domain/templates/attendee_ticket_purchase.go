@@ -2,21 +2,23 @@ package templates
 
 import (
 	"fmt"
+	"html/template"
 	"strings"
 	"time"
 )
 
 type AttendeeTicketPurchaseEmailData struct {
-	TicketID   string  `json:"ticket_id"`
-	QR         string  `json:"qr"`
-	EventID    string  `json:"event_id"`
-	EventTitle string  `json:"event_title"`
-	TicketType string  `json:"ticket_type"`
-	Date       string  `json:"date"`
-	Amount     string  `json:"amount"`
-	IsRSVP     bool    `json:"is_rsvp"`
-	Location   *string `json:"location"`
-	Admits     int     `json:"admits"`
+	TicketID     string         `json:"ticket_id"`
+	QR           string         `json:"qr"`
+	EventID      string         `json:"event_id"`
+	EventTitle   string         `json:"event_title"`
+	TicketType   string         `json:"ticket_type"`
+	Date         string         `json:"date"`
+	Amount       string         `json:"amount"`
+	IsRSVP       bool           `json:"is_rsvp"`
+	Location     *string        `json:"location"`
+	Admits       int            `json:"admits"`
+	ExtraMessage *template.HTML `json:"extra_message"`
 }
 
 func (tD *AttendeeTicketPurchaseEmailData) isEmailTemplateData() {}
