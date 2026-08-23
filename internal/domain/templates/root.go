@@ -100,6 +100,22 @@ func ParseTemplateData(templateName string, data map[string]interface{}, out *Em
 		*out = &result
 		return nil
 
+	case "ticket-transferred-in":
+		var result TicketTransferInData
+		if err := json.Unmarshal(raw, &result); err != nil {
+			return fmt.Errorf("failed to unmarshal ticket transfer in email data: %w", err)
+		}
+		*out = &result
+		return nil
+
+	case "ticket-transferred-out":
+		var result TicketTransferOutData
+		if err := json.Unmarshal(raw, &result); err != nil {
+			return fmt.Errorf("failed to unmarshal ticket transfer out email data: %w", err)
+		}
+		*out = &result
+		return nil
+
 	case "withdrawal-failed":
 		var result WithdrawalFailedData
 		if err := json.Unmarshal(raw, &result); err != nil {
