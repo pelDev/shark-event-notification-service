@@ -6,33 +6,19 @@ import (
 
 // ==================== RECIPIENT (Ticket Transfer In) ====================
 
-type TicketTransferInEvent struct {
-	Name string `json:"name"`
-	Id   string `json:"id"`
-}
-
-type TicketTransferInTicket struct {
-	ID         string `json:"id"`
-	Type       string `json:"type"`
-	Admits     int    `json:"admits"`
-	Amount     string `json:"amount"`
-	QR         string `json:"qr"`
-	TransferID string `json:"transfer_id"`
-}
-
-type TicketTransferInFromUser struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-
 type TicketTransferInData struct {
-	Event        TicketTransferInEvent    `json:"event"`
-	Ticket       TicketTransferInTicket   `json:"ticket"`
-	FromUser     TicketTransferInFromUser `json:"from_user"`
-	TransferDate string                   `json:"transfer_date"`
-	TransferTime string                   `json:"transfer_time"`
-	Message      string                   `json:"message"`
+	TransferID    string `json:"transfer_id"`
+	TicketID      string `json:"ticket_id"`
+	TicketType    string `json:"ticket_type"`
+	EventTitle    string `json:"event_title"`
+	FromUser      string `json:"from_user"`
+	FromUserEmail string `json:"from_user_email"`
+	TransferDate  string `json:"transfer_date"`
+	TransferTime  string `json:"transfer_time"`
+	Amount        string `json:"amount"`
+	QR            string `json:"qr"`
+	Admits        int    `json:"admits"`
+	Message       string `json:"message"`
 }
 
 func (e *TicketTransferInData) isEmailTemplateData() {}
@@ -57,8 +43,8 @@ func (e *TicketTransferInData) GetMessage(emailFrom, email, subject, html string
 
 func (e *TicketTransferInData) GetPreHeader() *string {
 	preHeader := fmt.Sprintf("🎟️ %s has transferred a ticket to you for '%s'!",
-		e.FromUser.Name,
-		e.Event.Name)
+		e.FromUser,
+		e.EventTitle)
 	return &preHeader
 }
 
@@ -84,12 +70,17 @@ type TicketTransferOutToUser struct {
 }
 
 type TicketTransferOutData struct {
-	Event        TicketTransferOutEvent  `json:"event"`
-	Ticket       TicketTransferOutTicket `json:"ticket"`
-	ToUser       TicketTransferOutToUser `json:"to_user"`
-	TransferDate string                  `json:"transfer_date"`
-	TransferTime string                  `json:"transfer_time"`
-	Message      string                  `json:"message"`
+	TransferID   string  `json:"transfer_id"`
+	TicketID     string  `json:"ticket_id"`
+	TicketType   string  `json:"ticket_type"`
+	EventTitle   string  `json:"event_title"`
+	ToUser       string  `json:"to_user"`
+	ToUserEmail  *string `json:"to_user_email"`
+	TransferDate string  `json:"transfer_date"`
+	TransferTime string  `json:"transfer_time"`
+	Amount       string  `json:"amount"`
+	Admits       int     `json:"admits"`
+	Message      string  `json:"message"`
 }
 
 func (e *TicketTransferOutData) isEmailTemplateData() {}
@@ -114,7 +105,7 @@ func (e *TicketTransferOutData) GetMessage(emailFrom, email, subject, html strin
 
 func (e *TicketTransferOutData) GetPreHeader() *string {
 	preHeader := fmt.Sprintf("✅ You successfully transferred a ticket for '%s' to %s!",
-		e.Event.Name,
-		e.ToUser.Name)
+		e.EventTitle,
+		e.ToUser)
 	return &preHeader
 }

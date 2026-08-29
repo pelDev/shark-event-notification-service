@@ -8,7 +8,7 @@
             </h1>
             <p
                 style="margin:10px 0 0 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#ffeefc; font-size:16px; line-height:1.4;">
-                Your ticket for <strong>{{ .Event.Name }}</strong> has been transferred to <strong>{{ .ToUser.Name
+                Your ticket for <strong>{{ .EventTitle }}</strong> has been transferred to <strong>{{ .ToUser
                     }}</strong>.
             </p>
         </td>
@@ -56,7 +56,7 @@
                 <!-- Event Title -->
                 <h2
                     style="margin:0 0 12px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; font-size:20px; color:#111827;">
-                    {{ .Event.Name }}
+                    {{ .EventTitle }}
                 </h2>
 
                 <!-- Ticket Details -->
@@ -68,17 +68,17 @@
                             Ticket ID</td>
                         <td
                             style="padding:6px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; text-align:right; color:#111827;">
-                            {{ .Ticket.ID }}</td>
+                            {{ .TicketID }}</td>
                     </tr>
 
-                    {{ if .Ticket.Type }}
+                    {{ if .TicketType }}
                     <tr>
                         <td
                             style="padding:6px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; font-weight:600; color:#6b7280;">
                             Ticket Type</td>
                         <td
                             style="padding:6px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; text-align:right; color:#111827;">
-                            {{ .Ticket.Type }}</td>
+                            {{ .TicketType }}</td>
                     </tr>
                     {{ end }}
 
@@ -88,17 +88,17 @@
                             Transferred To</td>
                         <td
                             style="padding:6px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; text-align:right; color:#111827;">
-                            {{ .ToUser.Name }}</td>
+                            {{ .ToUser }}</td>
                     </tr>
 
-                    {{ if .ToUser.Email }}
+                    {{ if .ToUserEmail }}
                     <tr>
                         <td
                             style="padding:6px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; font-weight:600; color:#6b7280;">
                             Recipient Email</td>
                         <td
                             style="padding:6px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; text-align:right; color:#111827;">
-                            {{ .ToUser.Email }}</td>
+                            {{ .ToUserEmail }}</td>
                     </tr>
                     {{ end }}
 
@@ -117,7 +117,7 @@
                             Ticket Admits</td>
                         <td
                             style="padding:6px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; text-align:right; color:#111827;">
-                            {{ .Ticket.Admits }}</td>
+                            {{ .Admits }}</td>
                     </tr>
 
                     <tr>
@@ -126,7 +126,7 @@
                             Amount Paid</td>
                         <td
                             style="padding:6px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; text-align:right; color:#111827;">
-                            {{ .Ticket.Amount }}</td>
+                            {{ .Amount }}</td>
                     </tr>
 
                     <tr>
@@ -135,7 +135,7 @@
                             Transfer Ref</td>
                         <td
                             style="padding:10px 0 0 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; text-align:right; font-size:12px; color:#9ca3af;">
-                            {{ .Ticket.TransferID }}</td>
+                            {{ .TransferID }}</td>
                     </tr>
 
                 </table>
@@ -155,7 +155,7 @@
                     style="margin-bottom:24px; padding:16px 20px; background:#fdf4ff; border-left:4px solid #C91CF4; border-radius:0 8px 8px 0; font-size:15px; line-height:1.6;">
                     <p
                         style="margin:0 0 6px 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; font-weight:600; color:#6b7280; font-size:12px; text-transform:uppercase; letter-spacing:0.04em;">
-                        Your message to {{ .ToUser.Name }}</p>
+                        Your message to {{ .ToUser }}</p>
                     {{ .Message }}
                 </div>
                 {{ end }}
