@@ -2,6 +2,8 @@ package templates
 
 import (
 	"fmt"
+	"strings"
+	"time"
 )
 
 // ==================== RECIPIENT (Ticket Transfer In) ====================
@@ -24,18 +26,45 @@ type TicketTransferInData struct {
 func (e *TicketTransferInData) isEmailTemplateData() {}
 
 func (e *TicketTransferInData) GetMessage(emailFrom, email, subject, html string) []byte {
+	boundary := fmt.Sprintf("mixed-%d", time.Now().UnixNano())
+	cid := "qr@local"
+
+	// Strip data URL prefix if present
+	qrBase64 := strings.TrimPrefix(e.QR, "data:image/png;base64,")
+
+	qrBase64Wrapped := wrapBase64(qrBase64, 76)
+
 	message := fmt.Sprintf(
 		"From: %s\r\n"+
 			"To: %s\r\n"+
 			"Subject: %s\r\n"+
 			"MIME-Version: 1.0\r\n"+
+			"Content-Type: multipart/related; boundary=\"%s\"\r\n"+
+			"\r\n"+
+			"--%s\r\n"+
 			"Content-Type: text/html; charset=\"UTF-8\"\r\n"+
 			"\r\n"+
-			"%s\r\n",
+			"%s\r\n"+
+			"\r\n"+
+			"--%s\r\n"+
+			"Content-Type: image/png\r\n"+
+			"Content-ID: <%s>\r\n"+
+			"Content-Disposition: inline; filename=\"qr.png\"\r\n"+ // ✅ Added
+			"Content-Transfer-Encoding: base64\r\n"+
+			"\r\n"+
+			"%s\r\n"+
+			"\r\n"+
+			"--%s--\r\n",
 		emailFrom,
 		email,
 		subject,
+		boundary,
+		boundary,
 		html,
+		boundary,
+		cid,
+		qrBase64Wrapped,
+		boundary,
 	)
 
 	return []byte(message)
