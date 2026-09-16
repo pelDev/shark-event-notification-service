@@ -21,6 +21,12 @@ type HttpEmailConfig struct {
 	APIKey string `mapstructure:"api_key"`
 }
 
+type BlogForgerConfig struct {
+	Url      string `mapstructure:"url"`
+	Bearer   string `mapstructure:"bearer"`
+	SenderID string `mapstructure:"sender_id"`
+}
+
 type ServiceConfig struct {
 	RetryBatchSize int           `mapstructure:"retry_batch_size"`
 	RetryInterval  time.Duration `mapstructure:"retry_interval"`
@@ -37,14 +43,15 @@ type SQLiteConfig struct {
 }
 
 type Config struct {
-	SQLite         SQLiteConfig    `mapstructure:"sqlite"`
-	Kafka          KafkaConfig     `mapstructure:"kafka"`
-	Email          EmailSMTPConfig `mapstructure:"email"`
-	MarketingEmail EmailSMTPConfig `mapstructure:"marketing_email"`
-	HTTPEmail      HttpEmailConfig `mapstructure:"http_email"`
-	Service        ServiceConfig   `mapstructure:"service"`
-	UserGrpcTarget string          `mapstructure:"user_grpc_target"`
-	HttpPort       int             `mapstructure:"http_port"`
+	SQLite         SQLiteConfig     `mapstructure:"sqlite"`
+	Kafka          KafkaConfig      `mapstructure:"kafka"`
+	Email          EmailSMTPConfig  `mapstructure:"email"`
+	MarketingEmail EmailSMTPConfig  `mapstructure:"marketing_email"`
+	HTTPEmail      HttpEmailConfig  `mapstructure:"http_email"`
+	Service        ServiceConfig    `mapstructure:"service"`
+	UserGrpcTarget string           `mapstructure:"user_grpc_target"`
+	HttpPort       int              `mapstructure:"http_port"`
+	BlogForger     BlogForgerConfig `mapstructure:"blogforger"`
 }
 
 func LoadConfig() Config {
@@ -73,6 +80,11 @@ func LoadConfig() Config {
 
 	// HTTP email
 	_ = viper.BindEnv("http_email.api_key", "HTTP_EMAIL_API_KEY")
+
+	// Blogforger
+	_ = viper.BindEnv("blogforger.url", "BLOGFORGER_URL")
+	_ = viper.BindEnv("blogforger.bearer", "BLOGFORGER_BEARER")
+	_ = viper.BindEnv("blogforger.sender_id", "BLOGFORGER_SENDER_ID")
 
 	// HTTP port
 	_ = viper.BindEnv("http_port", "HTTP_PORT")

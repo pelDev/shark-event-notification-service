@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/commitshark/notification-svc/internal/domain"
@@ -75,10 +76,28 @@ func (s *NotificationService) SendNotification(ctx context.Context, notification
 		return fmt.Errorf("notification %s cannot be sent", notification.ID)
 	}
 
+	needsBlogforger := notification.Content.Template != nil &&
+		strings.HasPrefix(*notification.Content.Template, "blogforger")
+
+	log.Printf("Need blogforger %v", needsBlogforger)
+
 	// Find a provider that supports this notification type
 	var provider ports.NotificationProvider
 	for _, p := range s.providers {
-		if p.Supports(notification.Type) {
+		if !p.Supports(notification.Type) {
+			continue
+		}
+
+		if needsBlogforger {
+			if p.Name() == "blogforger-email-provider" {
+				provider = p
+				break
+			}
+			continue // don't fall back to other providers for blogforger templates
+		}
+
+		// non-blogforger template: pick any provider that isn't the blogforger one
+		if !strings.HasPrefix(p.Name(), "blogforger") {
 			provider = p
 			break
 		}

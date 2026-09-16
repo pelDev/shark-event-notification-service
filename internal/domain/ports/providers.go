@@ -8,6 +8,13 @@ type NotificationProvider interface {
 	Name() string
 }
 
+type RenderResponse struct {
+	Html      string
+	Subject   *string
+	Preheader *string
+}
+
 type TemplateRenderer interface {
-	Render(templateName, subject string, data any, preHeader *string) (string, error)
+	Name() string
+	Render(templateName, subject string, data any, preHeader *string) (*RenderResponse, error)
 }

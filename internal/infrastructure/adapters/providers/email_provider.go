@@ -54,19 +54,23 @@ func (p *EmailProvider) Send(n *domain.Notification) (string, error) {
 			return "", err
 		}
 
-		html, err := p.renderer.Render(*n.Content.Template, subject, emailData, emailData.GetPreHeader())
+		response, err := p.renderer.Render(*n.Content.Template, subject, emailData, emailData.GetPreHeader())
 		if err != nil {
 			return "", err
 		}
 
 		fmt.Printf("[%s] Sending to %s: %s\n", p.Name(), email, subject)
 
+		if response.Subject != nil && *response.Subject != "" {
+			subject = *response.Subject
+		}
+
 		err = smtp.SendMail(
 			p.smtpHost+":"+strconv.Itoa(p.smtpPort),
 			p.smtpAuth,
 			p.emailFrom,
 			[]string{email},
-			emailData.GetMessage(p.emailFromDisplay, email, subject, html),
+			emailData.GetMessage(p.emailFromDisplay, email, subject, response.Html),
 		)
 		if err != nil {
 			return "", err

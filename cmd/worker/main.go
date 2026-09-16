@@ -13,6 +13,7 @@ import (
 	config "github.com/commitshark/notification-svc/internal"
 	"github.com/commitshark/notification-svc/internal/application/services"
 	"github.com/commitshark/notification-svc/internal/domain/ports"
+	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/blogforger"
 	grpcclient "github.com/commitshark/notification-svc/internal/infrastructure/adapters/grpc"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/kafka"
 	"github.com/commitshark/notification-svc/internal/infrastructure/adapters/providers"
@@ -51,6 +52,7 @@ func main() {
 	// Initialize providers
 	providerList := []ports.NotificationProvider{
 		providers.NewHTTPEmailProvider(cfg.HTTPEmail.Url, cfg.HTTPEmail.APIKey),
+		blogforger.NewBlogForgerEmailProvider(cfg.BlogForger.Url, cfg.BlogForger.Bearer, cfg.BlogForger.SenderID),
 		providers.NewSMSProvider(),
 		providers.NewPushProvider(),
 	}

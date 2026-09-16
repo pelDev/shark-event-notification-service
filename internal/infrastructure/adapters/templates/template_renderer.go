@@ -14,6 +14,10 @@ type GoTemplateRenderer struct {
 	templates *template.Template
 }
 
+func (r *GoTemplateRenderer) Name() string {
+	return "default"
+}
+
 type EmailLayoutData struct {
 	Subject        string
 	Preheader      string
@@ -41,22 +45,22 @@ func (r *GoTemplateRenderer) Render(
 	templateName, subject string,
 	data any,
 	preHeader *string,
-) (string, error) {
+) (*ports.RenderResponse, error) {
 	templateNameFull := fmt.Sprintf("%s.html", templateName)
 
 	d, ok := data.(domain_template.EmailTemplateData)
 	if !ok {
-		return "", fmt.Errorf("invalid template data type")
+		return nil, fmt.Errorf("invalid template data type")
 	}
 
 	if r.templates.Lookup(templateNameFull) == nil {
-		return "", fmt.Errorf("template %s not found", templateNameFull)
+		return nil, fmt.Errorf("template %s not found", templateNameFull)
 	}
 
 	var buf bytes.Buffer
 	err := r.templates.ExecuteTemplate(&buf, templateNameFull, d)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	preHeaderStr := ""
@@ -74,8 +78,14 @@ func (r *GoTemplateRenderer) Render(
 	var layoutBuf bytes.Buffer
 	err = r.templates.ExecuteTemplate(&layoutBuf, "layout.html", layoutData)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return layoutBuf.String(), nil
+	html := layoutBuf.String()
+
+	return &ports.RenderResponse{
+		Html:      html,
+		Subject:   nil,
+		Preheader: nil,
+	}, nil
 }

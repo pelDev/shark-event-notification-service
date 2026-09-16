@@ -52,7 +52,7 @@ func (p *MarketingEmailProvider) Send(n *domain.Notification) (string, error) {
 			return "", err
 		}
 
-		html, err := p.renderer.Render(*n.Content.Template, subject, emailData, emailData.GetPreHeader())
+		response, err := p.renderer.Render(*n.Content.Template, subject, emailData, emailData.GetPreHeader())
 		if err != nil {
 			return "", err
 		}
@@ -64,7 +64,7 @@ func (p *MarketingEmailProvider) Send(n *domain.Notification) (string, error) {
 			p.smtpAuth,
 			p.emailFrom,
 			[]string{email},
-			emailData.GetMessage(p.emailFrom, email, subject, html),
+			emailData.GetMessage(p.emailFrom, email, subject, response.Html),
 		)
 		if err != nil {
 			return "", err
