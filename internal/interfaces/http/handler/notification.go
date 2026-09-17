@@ -1,6 +1,7 @@
 package httphandler
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -72,6 +73,7 @@ func (h *NotificationHandler) ResendNotification(w http.ResponseWriter, r *http.
 	}
 
 	if err := h.notificationRepo.ClearForResend(r.Context(), notificationID); err != nil {
+		log.Println(err)
 		http.Error(w, "failed to resend notification", http.StatusInternalServerError)
 		return
 	}

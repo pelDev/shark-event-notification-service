@@ -420,9 +420,8 @@ func (r *SQLiteNotificationRepository) ClearForResend(ctx context.Context, id st
 	UPDATE notifications
 	SET status = 'PENDING',
 		retry_count = 0,
-		error = NULL,
-		sent_at = NULL,
-		updated_at = CURRENT_TIMESTAMP
+		provider_response = NULL,
+		sent_at = NULL
 	WHERE id = ?
 	`
 
