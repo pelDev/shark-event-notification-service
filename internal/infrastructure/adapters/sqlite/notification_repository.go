@@ -415,6 +415,34 @@ func (r *SQLiteNotificationRepository) FindPending(ctx context.Context, limit in
 	return notifications, nil
 }
 
+func (r *SQLiteNotificationRepository) ClearForResend(ctx context.Context, id string) error {
+	query := `
+	UPDATE notifications
+	SET status = 'PENDING',
+		retry_count = 0,
+		error = NULL,
+		sent_at = NULL,
+		updated_at = CURRENT_TIMESTAMP
+	WHERE id = ?
+	`
+
+	result, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("failed to clear notification for resend: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("notification not found: %s", id)
+	}
+
+	return nil
+}
+
 func (r *SQLiteNotificationRepository) PaginatedList(ctx context.Context, page int, pageSize int, filter domain.NotificationFilter) ([]*domain.Notification, int, error) {
 	// Calculate offset
 	offset := (page - 1) * pageSize

@@ -7,6 +7,7 @@ import (
 	applicationdto "github.com/commitshark/notification-svc/internal/application/dto"
 	"github.com/commitshark/notification-svc/internal/domain"
 	"github.com/commitshark/notification-svc/internal/domain/ports"
+	"github.com/go-chi/chi"
 )
 
 type NotificationHandler struct {
@@ -61,6 +62,21 @@ func (h *NotificationHandler) ListNotifications(w http.ResponseWriter, r *http.R
 
 	// Return JSON response
 	writeJSON(w, http.StatusOK, response)
+}
+
+func (h *NotificationHandler) ResendNotification(w http.ResponseWriter, r *http.Request) {
+	notificationID := chi.URLParam(r, "notificationID")
+	if notificationID == "" {
+		http.Error(w, "notification ID is required", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.notificationRepo.ClearForResend(r.Context(), notificationID); err != nil {
+		http.Error(w, "failed to resend notification", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func parseListNotificationsRequest(r *http.Request) (*applicationdto.ListNotificationsRequest, error) {

@@ -10,6 +10,7 @@ import (
 type NotificationRepository interface {
 	Save(ctx context.Context, notification *domain.Notification) error
 	FindByID(ctx context.Context, id string) (*domain.Notification, error)
+	ClearForResend(ctx context.Context, id string) error
 	FindPending(ctx context.Context, limit int) ([]*domain.Notification, error)
 	PaginatedList(ctx context.Context, page, pageSize int, filter domain.NotificationFilter) ([]*domain.Notification, int, error)
 	UpdateStatus(ctx context.Context, id string, status domain.NotificationStatus, providerResponse string) error

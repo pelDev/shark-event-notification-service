@@ -45,6 +45,8 @@ func NewRouter(
 			r.Use(authn.RequireAdmin)
 
 			r.Get("/", handler.ListNotifications)
+
+			r.Post("/notifications/{notificationID}/resend", handler.ResendNotification)
 		})
 	})
 
