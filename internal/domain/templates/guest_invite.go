@@ -11,6 +11,7 @@ type GuestInviteData struct {
 	Subject        string           `json:"subject"`
 	Event          GuestInviteEvent `json:"event"`
 	InvitationRole string           `json:"invitation_role"`
+	ExpiresAt      string           `json:"expires_at"`
 	InviteMessage  *string          `json:"invite_message,omitempty"`
 	Link           string           `json:"link"`
 	Admits         int              `json:"admits"`
