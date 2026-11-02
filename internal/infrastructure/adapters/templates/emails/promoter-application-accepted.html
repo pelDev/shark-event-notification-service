@@ -1,0 +1,49 @@
+<!-- HERO -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:40px; background:linear-gradient(90deg, #C91CF4 0%, #B4545C 100%);">
+            <h1
+                style="margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#ffffff; font-size:26px; line-height:1.3;">
+                🎉 You're In!
+            </h1>
+            <p
+                style="margin:10px 0 0 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#ffeefc; font-size:16px; line-height:1.4;">
+                Your application to promote {{ .EventName }} has been accepted.
+            </p>
+        </td>
+    </tr>
+</table>
+
+<!-- BODY -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:28px 40px; background:#ffffff;">
+            <div
+                style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#1f2937; font-size:16px; line-height:1.6;">
+
+                <p style="margin:0;">
+                    Great news — the organizer of <strong>{{ .EventName }}</strong> has approved you as a promoter.
+                    You can now share your promo link and earn commission on every ticket sold through it.
+                </p>
+
+                {{ if .AcceptedAt }}
+                <p style="margin:16px 0 0 0; color:#6b7280; font-size:14px;">
+                    Accepted on {{ .AcceptedAt }}
+                </p>
+                {{ end }}
+
+                <div style="margin-top:22px;">
+                    <a href="{{ .Link }}"
+                        style="display:inline-block; padding:12px 22px; border-radius:8px; background-color:#C91CF4; color:#fff; font-weight:600; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; text-decoration:none;">
+                        Get Your Promo Link
+                    </a>
+                </div>
+
+                <p style="margin:26px 0 0 0;">
+                    Track your clicks, sales and payouts anytime from your promoter dashboard.
+                </p>
+
+            </div>
+        </td>
+    </tr>
+</table>
