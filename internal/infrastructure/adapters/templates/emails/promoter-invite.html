@@ -1,0 +1,54 @@
+<!-- HERO -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:40px; background:linear-gradient(90deg, #C91CF4 0%, #B4545C 100%);">
+            <h1
+                style="margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#ffffff; font-size:26px; line-height:1.3;">
+                You're Invited
+            </h1>
+            <p
+                style="margin:10px 0 0 0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#ffeefc; font-size:16px; line-height:1.4;">
+                Promote {{ .EventName }} and earn commission on every ticket.
+            </p>
+        </td>
+    </tr>
+</table>
+
+<!-- BODY -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="padding:28px 40px; background:#ffffff;">
+            <div
+                style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#1f2937; font-size:16px; line-height:1.6;">
+
+                <p style="margin:0;">
+                    The organizer of <strong>{{ .EventName }}</strong> has invited you to promote their event.
+                    Accept the invite and you'll get your promo links right away. No application needed.
+                </p>
+
+                {{ if .Message }}
+                <div style="margin:18px 0 0 0; padding:14px 16px; border-radius:8px; background:#f9fafb; border:1px solid #e5e7eb;">
+                    <p style="margin:0; color:#6b7280; font-size:13px; text-transform:uppercase; letter-spacing:0.04em;">
+                        Note from the organizer
+                    </p>
+                    <p style="margin:6px 0 0 0; color:#1f2937; font-size:15px;">
+                        {{ .Message }}
+                    </p>
+                </div>
+                {{ end }}
+
+                <div style="margin-top:22px;">
+                    <a href="{{ .Link }}"
+                        style="display:inline-block; padding:12px 22px; border-radius:8px; background-color:#C91CF4; color:#fff; font-weight:600; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; text-decoration:none;">
+                        View Invite
+                    </a>
+                </div>
+
+                <p style="margin:26px 0 0 0; color:#6b7280; font-size:14px;">
+                    Promoter spots are limited, and the invite closes when the event ends.
+                </p>
+
+            </div>
+        </td>
+    </tr>
+</table>
