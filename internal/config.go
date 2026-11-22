@@ -26,6 +26,7 @@ type BlogForgerConfig struct {
 	Bearer                     string  `mapstructure:"bearer"`
 	SenderID                   string  `mapstructure:"sender_id"`
 	TicketPurchaseWithLocation *string `mapstructure:"ticket_purchase_with_location"`
+	RSVPReadyEmail             *string `mapstructure:"rsvp_ready_email"`
 }
 
 type ServiceConfig struct {
@@ -87,6 +88,7 @@ func LoadConfig() Config {
 	_ = viper.BindEnv("blogforger.bearer", "BLOGFORGER_BEARER")
 	_ = viper.BindEnv("blogforger.sender_id", "BLOGFORGER_SENDER_ID")
 	_ = viper.BindEnv("blogforger.ticket_purchase_with_location", "BLOGFORGER_TICKET_PURCHASE_WITH_LOCATION")
+	_ = viper.BindEnv("blogforger.rsvp_ready_email", "BLOGFORGER_RSVP_READY_EMAIL")
 
 	// HTTP port
 	_ = viper.BindEnv("http_port", "HTTP_PORT")

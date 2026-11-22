@@ -17,17 +17,20 @@ type NotificationService struct {
 	repo                                 ports.NotificationRepository
 	providers                            []ports.NotificationProvider
 	blogForgerTicketPurchaseWithLocation *string
+	rsvpReadyEmail                       *string
 }
 
 func NewNotificationService(
 	repo ports.NotificationRepository,
 	providers []ports.NotificationProvider,
 	blogForgerTicketPurchaseWithLocation *string,
+	rsvpReadyEmail *string,
 ) *NotificationService {
 	return &NotificationService{
 		repo:                                 repo,
 		providers:                            providers,
 		blogForgerTicketPurchaseWithLocation: blogForgerTicketPurchaseWithLocation,
+		rsvpReadyEmail:                       rsvpReadyEmail,
 	}
 }
 
@@ -174,7 +177,7 @@ func (s *NotificationService) handleSendTicketReadyEmail(
 	n *domain.Notification,
 	defaultProvider ports.NotificationProvider,
 ) (string, error) {
-	if s.blogForgerTicketPurchaseWithLocation == nil || *s.blogForgerTicketPurchaseWithLocation == "" || n.Content.Data == nil {
+	if n.Content.Data == nil {
 		log.Println("fallback 1")
 		return defaultProvider.Send(n, n.IsMarketing == 1)
 	}
@@ -189,24 +192,38 @@ func (s *NotificationService) handleSendTicketReadyEmail(
 		return "", fmt.Errorf("failed to unmarshal ticket email data: %w", err)
 	}
 
-	log.Println(notificationData.IsRSVP)
-	log.Println(notificationData.Location)
-
-	if notificationData.IsRSVP {
+	if (s.blogForgerTicketPurchaseWithLocation == nil || *s.blogForgerTicketPurchaseWithLocation == "") && !notificationData.IsRSVP {
 		log.Println("fallback 2")
+		return defaultProvider.Send(n, n.IsMarketing == 1)
+	}
+
+	if (s.rsvpReadyEmail == nil || *s.rsvpReadyEmail == "") && notificationData.IsRSVP {
+		log.Println("fallback 3")
 		return defaultProvider.Send(n, n.IsMarketing == 1)
 	}
 
 	blogforgerProvider := s.getBlogforgerProvider(n)
 
 	if blogforgerProvider == nil {
-		log.Println("fallback 3")
+		log.Println("fallback 4")
 		return defaultProvider.Send(n, n.IsMarketing == 1)
 	}
 
 	nCopy := *n
 
-	templateStr := fmt.Sprintf("blogforger:%s", *s.blogForgerTicketPurchaseWithLocation)
+	var templateStr string
+
+	if notificationData.IsRSVP {
+		templateStr = fmt.Sprintf("blogforger:%s", *s.rsvpReadyEmail)
+	} else {
+		templateStr = fmt.Sprintf("blogforger:%s", *s.blogForgerTicketPurchaseWithLocation)
+	}
+
+	if templateStr == "" {
+		log.Println("fallback 5")
+		return defaultProvider.Send(n, n.IsMarketing == 1)
+	}
+
 	log.Printf("Template string %s", templateStr)
 
 	nCopy.Content.Template = &templateStr

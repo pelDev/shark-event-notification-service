@@ -58,7 +58,7 @@ func main() {
 	}
 
 	// Initialize service
-	notificationService := services.NewNotificationService(repo, providerList, cfg.BlogForger.TicketPurchaseWithLocation)
+	notificationService := services.NewNotificationService(repo, providerList, cfg.BlogForger.TicketPurchaseWithLocation, cfg.BlogForger.RSVPReadyEmail)
 
 	// Kafka handler & consumer
 	kafkaHandler := kafka.NewKafkaMessageHandler(notificationService, userDataAdapter)
