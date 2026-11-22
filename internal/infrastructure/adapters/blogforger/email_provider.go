@@ -49,6 +49,9 @@ func (p *BlogForgerEmailProvider) Send(n *domain.Notification, isMarketing bool)
 
 	emailID := strings.TrimPrefix(*n.Content.Template, prefix)
 
+	log.Println("emailID")
+	log.Println(emailID)
+
 	payload := map[string]any{
 		"variables": *n.Content.Data,
 		"to":        *n.Recipient.Email,
@@ -78,12 +81,13 @@ func (p *BlogForgerEmailProvider) Send(n *domain.Notification, isMarketing bool)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= 300 {
-		return "", fmt.Errorf("remote email provider returned status %d", resp.StatusCode)
-	}
-
 	var responseBody map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&responseBody)
+
+	if resp.StatusCode >= 300 {
+		log.Println(responseBody)
+		return "", fmt.Errorf("remote email provider returned status %d", resp.StatusCode)
+	}
 
 	return fmt.Sprintf("email sent via blogforger provider: %v", responseBody), nil
 }

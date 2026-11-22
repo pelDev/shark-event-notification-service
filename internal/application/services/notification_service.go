@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -9,20 +10,24 @@ import (
 
 	"github.com/commitshark/notification-svc/internal/domain"
 	"github.com/commitshark/notification-svc/internal/domain/ports"
+	"github.com/commitshark/notification-svc/internal/domain/templates"
 )
 
 type NotificationService struct {
-	repo      ports.NotificationRepository
-	providers []ports.NotificationProvider
+	repo                                 ports.NotificationRepository
+	providers                            []ports.NotificationProvider
+	blogForgerTicketPurchaseWithLocation *string
 }
 
 func NewNotificationService(
 	repo ports.NotificationRepository,
 	providers []ports.NotificationProvider,
+	blogForgerTicketPurchaseWithLocation *string,
 ) *NotificationService {
 	return &NotificationService{
-		repo:      repo,
-		providers: providers,
+		repo:                                 repo,
+		providers:                            providers,
+		blogForgerTicketPurchaseWithLocation: blogForgerTicketPurchaseWithLocation,
 	}
 }
 
@@ -109,14 +114,25 @@ func (s *NotificationService) SendNotification(ctx context.Context, notification
 
 	log.Printf("[SendNotification] Send notification marketing (1/0) = %d Provider = %s", notification.IsMarketing, provider.Name())
 
+	var providerResponse string
+	var sendErr error
+
+	log.Printf("Template = %s", *notification.Content.Template)
+
 	// Attempt to send
-	providerResponse, err := provider.Send(notification, notification.IsMarketing == 1)
-	if err != nil {
-		notification.MarkAsFailed(err.Error())
+	if notification.Content.Template != nil && *notification.Content.Template == "ticket-ready" {
+		log.Println("handle send ticket ready")
+		providerResponse, sendErr = s.handleSendTicketReadyEmail(notification, provider)
+	} else {
+		providerResponse, sendErr = provider.Send(notification, notification.IsMarketing == 1)
+	}
+
+	if sendErr != nil {
+		notification.MarkAsFailed(sendErr.Error())
 		if saveErr := s.repo.Save(ctx, notification); saveErr != nil {
 			log.Printf("Failed to save failed notification: %v", saveErr)
 		}
-		return fmt.Errorf("failed to send notification: %w", err)
+		return fmt.Errorf("failed to send notification: %w", sendErr)
 	}
 
 	// Mark as sent
@@ -152,4 +168,83 @@ func (s *NotificationService) RetryFailedNotifications(ctx context.Context, batc
 	}
 
 	return nil
+}
+
+func (s *NotificationService) handleSendTicketReadyEmail(
+	n *domain.Notification,
+	defaultProvider ports.NotificationProvider,
+) (string, error) {
+	if s.blogForgerTicketPurchaseWithLocation == nil || *s.blogForgerTicketPurchaseWithLocation == "" || n.Content.Data == nil {
+		log.Println("fallback 1")
+		return defaultProvider.Send(n, n.IsMarketing == 1)
+	}
+
+	raw, err := json.Marshal(*&n.Content.Data)
+	if err != nil {
+		return "", err
+	}
+
+	var notificationData templates.AttendeeTicketPurchaseEmailData
+	if err := json.Unmarshal(raw, &notificationData); err != nil {
+		return "", fmt.Errorf("failed to unmarshal ticket email data: %w", err)
+	}
+
+	log.Println(notificationData.IsRSVP)
+	log.Println(notificationData.Location)
+
+	if notificationData.IsRSVP {
+		log.Println("fallback 2")
+		return defaultProvider.Send(n, n.IsMarketing == 1)
+	}
+
+	blogforgerProvider := s.getBlogforgerProvider(n)
+
+	if blogforgerProvider == nil {
+		log.Println("fallback 3")
+		return defaultProvider.Send(n, n.IsMarketing == 1)
+	}
+
+	nCopy := *n
+
+	templateStr := fmt.Sprintf("blogforger:%s", *s.blogForgerTicketPurchaseWithLocation)
+	log.Printf("Template string %s", templateStr)
+
+	nCopy.Content.Template = &templateStr
+	log.Println(nCopy.Content.Template)
+
+	if notificationData.Location == nil || *notificationData.Location == "" {
+		location := "Location would be communicated at most 2 days to the event"
+		notificationData.Location = &location
+		notificationDataMap, _ := structToMap(notificationData)
+		nCopy.Content.Data = &notificationDataMap
+	}
+
+	return blogforgerProvider.Send(&nCopy, nCopy.IsMarketing == 1)
+}
+
+func (s *NotificationService) getBlogforgerProvider(n *domain.Notification) ports.NotificationProvider {
+	var provider ports.NotificationProvider
+	for _, p := range s.providers {
+		if !p.Supports(n.Type) {
+			continue
+		}
+
+		if p.Name() == "blogforger-email-provider" {
+			provider = p
+			break
+		}
+		continue // don't fall back to other providers for blogforger templates
+
+	}
+	return provider
+}
+
+func structToMap(v interface{}) (map[string]interface{}, error) {
+	var m map[string]interface{}
+	b, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(b, &m)
+	return m, err
 }

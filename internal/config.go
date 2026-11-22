@@ -22,9 +22,10 @@ type HttpEmailConfig struct {
 }
 
 type BlogForgerConfig struct {
-	Url      string `mapstructure:"url"`
-	Bearer   string `mapstructure:"bearer"`
-	SenderID string `mapstructure:"sender_id"`
+	Url                        string  `mapstructure:"url"`
+	Bearer                     string  `mapstructure:"bearer"`
+	SenderID                   string  `mapstructure:"sender_id"`
+	TicketPurchaseWithLocation *string `mapstructure:"ticket_purchase_with_location"`
 }
 
 type ServiceConfig struct {
@@ -85,6 +86,7 @@ func LoadConfig() Config {
 	_ = viper.BindEnv("blogforger.url", "BLOGFORGER_URL")
 	_ = viper.BindEnv("blogforger.bearer", "BLOGFORGER_BEARER")
 	_ = viper.BindEnv("blogforger.sender_id", "BLOGFORGER_SENDER_ID")
+	_ = viper.BindEnv("blogforger.ticket_purchase_with_location", "BLOGFORGER_TICKET_PURCHASE_WITH_LOCATION")
 
 	// HTTP port
 	_ = viper.BindEnv("http_port", "HTTP_PORT")

@@ -18,6 +18,7 @@ type AttendeeTicketPurchaseEmailData struct {
 	IsRSVP       bool           `json:"is_rsvp"`
 	Location     *string        `json:"location"`
 	Admits       int            `json:"admits"`
+	AdmitsDesc   string         `json:"admits_desc"`
 	ExtraMessage *template.HTML `json:"extra_message"`
 }
 
