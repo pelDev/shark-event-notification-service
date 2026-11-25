@@ -20,6 +20,14 @@ func ParseTemplateData(templateName string, data map[string]interface{}, out *Em
 	}
 
 	switch templateName {
+	case "user_plan_activated":
+		var result UserPlanActivatedData
+		if err := json.Unmarshal(raw, &result); err != nil {
+			return fmt.Errorf("failed to unmarshal user plan activated data: %w", err)
+		}
+		*out = &result
+		return nil
+
 	case "promoter-application-accepted":
 		var result PromotionApplicationAcceptedData
 		if err := json.Unmarshal(raw, &result); err != nil {
